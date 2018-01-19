@@ -1,0 +1,777 @@
+@charset "utf-8";
+html,body,div,h2,ul,li,span,em,p,dl,dd,i,input, textarea, select, option,button{
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+body{
+    font-family: "宋体","Microsoft Yahei", "Helvetica Neue", "Helvetica", "Hiragino Sans GB", "WenQuanYi Micro Hei", "sans-serif";
+    font-size: 14px;
+    background: #fff;
+    height: 100%;
+    overflow: hidden;
+    color: #666;
+}
+html,body,#app{
+  width: 100%;
+  height: 100%;
+}
+ul,li{
+  list-style: none;
+}
+h2{
+  font-size: 14px;
+  font-weight: normal;
+}
+button{
+  border: none;
+  cursor: pointer;
+}
+textarea{
+  resize: none;
+  border-radius: 5px;
+  color: #5a5e66;
+  border-color: #D8DCE5;
+  width: 100%;
+  padding: 10px;
+  min-height: 70px;
+}
+a{
+  text-decoration: none;
+  cursor: pointer;
+}
+em{
+  font-style: normal;
+}
+.loncom_family_yahei{
+  font-family: "Microsoft Yahei";
+}
+.loncom_color{
+  color: #0064aa;
+}
+.loncom_color1ABC9C{
+  color: #1ABC9C;
+}
+.loncom_color108EE9{
+  color: #108EE9;
+}
+.loncom_color999{
+  color: #999;
+}
+.loncom_font_size12{
+  font-size: 12px;
+}
+.loncom_ml5{
+  margin-left: 5px !important;
+}
+.loncom_ml10{
+  margin-left: 10px !important;
+}
+.loncom_ml15{
+  margin-left: 15px !important;
+}
+.loncom_mr5{
+  margin-right: 5px !important;
+}
+.loncom_mr10{
+  margin-right: 10px !important;
+}
+.loncom_mb10{
+  margin-bottom: 10px !important;
+}
+.loncom_mb15{
+  margin-bottom: 15px !important;
+}
+.loncom_mt10{
+  margin-top: 10px !important;
+}
+.loncom_pr20{
+  padding-right: 20px !important;
+}
+.loncom_mb20{
+  margin-bottom: 20px !important;
+}
+.loncom_mb50{
+  margin-bottom: 50px !important;
+}
+.loncom_fl{
+  float:left;
+}
+.loncom_fr{
+  float: right;
+}
+.loncom_overflow_hidden{
+  overflow: hidden;
+}
+.loncom_public_shadow {
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+}
+.loncom_public_shadow:hover {
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.45);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.45);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.45);
+}
+.loncom_dis_inline{
+  display: inline;
+}
+.loncom_dis_inlineblock{
+  display: inline-block;
+}
+.loncom_content{
+  width: 100% !important;
+  height: 100% !important;
+}
+/*重置element*/
+.el-table,.el-checkbox__label{
+  font-size: 12px !important;
+  margin: 0 !important;
+}
+.el-tabs__header{
+  margin: 0 !important;
+}
+.el-form-item__label{
+  font-size: 12px !important; 
+}
+.upload-demo{
+  float: left !important;
+}
+.el-select{
+  width: 100%;
+}
+.el-transfer-panel .el-transfer-panel__header .el-checkbox .el-checkbox__label{
+  font-size: 14px !important;
+}
+.el-switch{
+  height: 22px !important;
+}
+/*table的底部btn按钮*/
+.loncom_position_relative{
+  position: relative;
+}
+.loncom_table_btn{ 
+  position: absolute;
+  left: 48px;
+  bottom: 0;
+}
+/*圆心*/
+.loncom_circle{
+  width: 6px;
+  height: 6px;
+  display: inline-block;
+  background: #ccc;
+  border-radius: 50%;
+}
+/*新增的加号*/
+.loncom_public_add{
+  width: 34px;
+  height: 34px;
+  position: relative;
+}
+.loncom_public_add em{
+    position: absolute;
+    background: #a1a1a1;
+}
+.loncom_public_add em:nth-of-type(1){
+    width: 6px;
+    height: 34px;
+    left: 14px;
+}
+.loncom_public_add em:nth-of-type(2){
+    width: 34px;
+    height: 6px;
+    top: 14px;
+}
+.loncom_public_card_box .loncom_public_add{
+    left: 50%;
+    margin-left: -17px;
+    top: 50%;
+    margin-top: -17px;
+    position: absolute;
+} 
+/*弹窗确认*/
+.el-dialog,.el-message-box{
+  margin-bottom: 0 !important;
+  border-radius: 10px !important;
+}
+.el-dialog__header,.el-message-box__header{
+  border-bottom: 1px solid #ccc;
+}
+.el-dialog__body{
+  padding: 0px !important;
+}
+.el-dialog__footer,.el-message-box__btns{
+  border-top: 1px solid #ccc;
+}
+.el-button{
+  padding: 10px 18px !important;
+}
+.loncom_dialog_scroll{
+  overflow: auto !important;
+}
+.el-message-box__content{
+  padding: 50px 15px !important;
+}
+/*input去border*/
+.loncom_table_inputnoborder input{
+    border-color: #d8dce5;
+}
+.loncom_table_inputnoborder .loncom_active input{
+    border-color: #fff !important; 
+    background-color: #fff !important;
+    color: #5a5e66 !important;
+    cursor: auto !important;
+}
+
+/*列表左标题，右内容展示*/
+.loncom_list_box{
+  width: 100%;
+  min-height: 32px;
+  line-height: 32px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+.loncom_list_box_left{
+    width: 18%;
+    margin-right: 2%;
+    float: left;
+    color: #666;
+    text-align: right;
+}
+.loncom_list_box_left em {
+    color: #fb0101;
+    margin-right: 5px;
+}
+.loncom_list_box_right {
+    width: 80%;
+    float: left;
+    color: #666;
+}
+.loncom_list_box_info{
+  color: #999;
+}
+.loncom_list_box_right .loncom_public_check,.loncom_list_box_right .loncom_public_radio{
+  margin: 9px 5px 0 0;
+}
+/*勾选框*/
+.loncom_public_check_input, .loncom_public_radio_input{
+	display:none;
+}
+.loncom_public_check_input+label {
+    border: 1px solid #b3b3b3;
+    width: 12px;
+    height: 12px;
+    display: block;
+    position: relative;
+    margin: 0;
+    line-height: 14px;
+    text-align: center;
+    float:left;
+}
+.loncom_public_check_input:checked+label:after {
+    content: '\2714';
+    font-size: 12px;
+    width: 14px;
+    height: 14px;
+    background: #409eff;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    color: #fff;
+}
+.loncom_public_radio_input+label{
+  border: 1px solid #b3b3b3;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: block;
+    position: relative;
+    margin: 0;
+}
+.loncom_public_radio_input:checked+label{
+  border-color: #409eff;
+}
+.loncom_public_radio_input:checked+label:after{
+  content: "";
+    width: 8px;
+    height: 8px;
+    background: #409eff;
+    position: absolute;
+    border-radius: 50%;
+    top: 50%;
+    margin-top: -4px;
+    left: 50%;
+    margin-left: -4px;
+}
+/*页面级的tab切换的box*/
+.loncom_public_tab{
+    width: 100%;
+    border: 1px solid #E4E4E4;
+    height: -webkit-calc(100% - 60px);
+    height: -moz-calc(100% - 60px);
+    height: calc(100% - 60px);
+    /*底部60px放编辑提交*/
+}
+.loncom_public_onetab .el-tabs__active-bar{ /*没有切换的用*/
+  background: none;
+}
+.loncom_public_onetab .el-tabs__item.is-active{
+  color: #666 !important;
+}
+.loncom_public_tab .el-tabs,.loncom_public_tab .el-tab-pane{
+    height: 100%;
+}
+ .loncom_public_tab .el-tabs__content{
+     height: -webkit-calc(100% - 50px);
+    height: -moz-calc(100% - 50px);
+    height: calc(100% - 50px);
+ }
+.loncom_public_tab .el-tabs__header{
+    background: #F3F3F3;
+    padding-left: 20px;
+    border-bottom: 1px solid #dfe4ed;
+}
+.loncom_public_tab .el-tabs__item{
+    height: 50px;
+    line-height: 50px;
+}
+.loncom_public_tab .el-tabs__nav-wrap::after{
+  background: none;
+}
+.loncom_public_tabbox{
+  width: 100%;
+  height: 100%;
+  padding: 15px 20px 0 20px;
+}
+.loncom_public_tabboxcon{
+  width: 50%;
+  margin: 0px auto;
+  padding: 20px 0 10px 0;
+}
+.loncom_public_tabbtn{
+  text-align: right;
+  padding: 12px 0;
+}
+/*box框信息及左边3px border的title*/
+.loncom_sysinfo_box_left{
+    color: #108EE9;
+    min-width: 90px;
+    padding: 6px 0;
+    float: left;
+}
+.loncom_sysinfo_box_left h2{
+    border-left: 3px solid #108EE9;
+    text-indent: 10px;
+    height: 18px;
+    line-height: 18px;
+}
+.loncom_sysinfo_box{
+  height: 30px;
+  line-height: 28px;
+  text-indent: 15px;
+  border: 1px solid #D7D7D7;
+  color: #666;
+  font-size: 12px;
+  font-family: "微软雅黑";
+}
+.loncom_sysinfo_box_right{
+  height: 30px;
+  line-height: 30px;
+}
+/*带左侧树形用到的*/
+.loncom_public_lefttree{
+  width: 250px;
+  height: -webkit-calc(100% - 5px);
+  height: -moz-calc(100% - 5px);
+  height: calc(100% - 5px);
+  float: left;
+  border: 1px solid #dfe4ed
+}
+.loncom_public_lefttree_title{
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  border-bottom: 1px solid #dfe4ed;
+  background: #F3F3F3;
+}
+.loncom_public_lefttree_con{
+  width: 100%;
+  height: -webkit-calc(100% - 50px);
+  height: -moz-calc(100% - 50px);
+  height: calc(100% - 50px);
+  padding: 15px 20px;
+}
+.loncom_public_lefttree_add{
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
+  color: #108EE9;
+  border: 1px dashed #E4E4E4;
+  cursor: pointer;
+}
+.loncom_public_lefttree_add:hover{
+  background: #108EE9;
+  color: #fff;
+  border-color: #108EE9;
+}
+.loncom_tree_list{
+  width: -webkit-calc(100% - 24px);
+  width: -moz-calc(100% - 24px);
+  width: calc(100% - 24px);
+  font-size: 12px;
+}
+.loncom_tree_listbtn{
+  display: none;
+}
+.loncom_tree_list:hover .loncom_tree_listbtn{
+  display: block;
+}
+.loncom_tree_listbtn i:hover{
+  color: #108EE9;
+}
+.loncom_public_treeright{
+  width: -webkit-calc(100% - 250px);
+  width: -moz-calc(100% - 250px);
+  width: calc(100% - 250px);
+  height: -webkit-calc(100% - 5px);
+  height: -moz-calc(100% - 5px);
+  height: calc(100% - 5px);
+  float: left;
+}
+/*告警图标*/
+.loncom_index_alarm1 {
+  background: url(../images/index_alarm1.png) no-repeat;
+   background-size: contain;
+}
+.loncom_index_alarm2 {
+  background: url(../images/index_alarm2.png) no-repeat;
+   background-size: contain;
+}
+.loncom_index_alarm3 {
+  background: url(../images/index_alarm3.png) no-repeat;
+   background-size: contain;
+}
+.loncom_index_alarm4 {
+  background: url(../images/index_alarm4.png) no-repeat;
+   background-size: contain;
+}
+/*sidebar侧边导航*/
+.loncom_sidebar{
+  width: 200px;
+  height: 100%;
+  display: block;
+  background: #26344B;
+  left: 0;
+  color: #fff;
+  position: absolute;
+  transition: all 0.5s ease-in
+}
+.loncom_sidebar_top{
+  width: 100%;
+  height: 65px;
+  padding: 15px;
+  background: #17C4BB;
+  font-size: 21px;
+  line-height: 35px;
+}
+.loncom_navbtn{
+  position: relative;
+  right: 0;
+  transition: all 0.5s ease-in;
+  cursor: pointer;
+}
+.loncom_sidebar_list li p{
+  text-align: center;
+}
+.loncom_sidebar_list li p span{
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  margin: 10px 0 5px 0;
+}
+.loncom_sidebar_list li a span.loncom_environment{
+  background: url(../images/loncom_environment.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_power{
+  background: url(../images/loncom_power.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_security{
+  background: url(../images/loncom_security.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_energy{
+  background: url(../images/loncom_energy.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_alarm{
+  background: url(../images/loncom_alarm.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_statement{
+  background: url(../images/loncom_statement.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_equipment{
+  background: url(../images/loncom_equipment.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a span.loncom_system{
+  background: url(../images/loncom_system.svg) no-repeat;
+  background-size: contain;
+}
+.loncom_sidebar_list li a{
+  width: 100%;
+  height: 65px;
+  display: block;
+  color: #fff;
+  font-size: 12px;
+  border-bottom: 1px solid #2B3B55;
+}
+.loncom_sidebar_list .router-link-active{
+  background: #1F2B3D;
+}
+.loncom_sidebar_bottom{
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  height: 45px;
+  text-align: center;
+}
+.loncom_sidebar_bottom span.loncom_home{
+  width: 45px;
+  height: 45px;
+  display: inline-block;
+  background: url(../images/loncom_home.svg) no-repeat;
+  background-size: contain;
+}
+
+/*公共右边*/
+.loncom_sidebar_right{
+  width: 100%;
+  height: 100%;
+  padding-left: 200px;
+  float: left;
+  transition: all 0.5s ease-in
+}
+.loncom_public_top{
+  width: 100%;
+  height: 65px;
+  background: #F2F2F2;
+  -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+}
+.loncom_public_top h2{
+  line-height: 65px;
+  text-indent: 20px;
+  color: #333;
+  font-weight: 400;
+  font-size: 16px;
+  display: inline-block;
+}
+.loncom_public_top ul {
+  padding: 18px 20px 0 0;
+}
+.loncom_public_top ul li{
+  padding: 0 15px;
+  height: 28px;
+  line-height: 28px;
+  font-size: 12px;
+  background: #fff;
+  color: #666;
+  float: left;
+  cursor: pointer;
+  border: 1px solid #D9D9D9;
+}
+.loncom_public_top ul li.loncom_active{
+  background: #239EBB;
+  border-color: #239EBB;
+  color: #fff;
+}
+.loncom_public_top ul li:nth-of-type(1){
+  border-radius: 5px 0 0 5px;
+}
+.loncom_public_top ul li:nth-last-of-type(1){
+  border-radius: 0 5px 5px 0;
+}
+.loncom_public_card{
+  padding: 20px 0 0 20px;
+  height: auto;
+  width: 100%;
+}
+.loncom_public_card li{
+  width: 50%;
+  float: left;
+  padding: 0 20px 20px 0;
+}
+.loncom_public_card_box{
+    width: 100%;
+    min-height: 150px;
+    position: relative;
+}
+.loncom_public_card_box:hover .loncom_public_card_box_bottom{
+  display: block;
+}
+.loncom_public_card_box_top{
+  min-height: 35px;
+  font-size: 12px;
+  padding: 12px 0 0 20px;
+  cursor: auto;
+}
+.loncom_public_card_box_topr{
+  width: 100px;
+  position: relative;
+}
+.loncom_public_card_box_topr:hover .loncom_public_card_box_toprcon{
+  display: block;
+}
+.loncom_public_card_box_toprtitle{
+  text-align: center;
+  color: #00a413;
+  font-weight: bold;
+  position: relative;
+  height: 20px;
+}
+.loncom_public_card_box_toprtitle:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #999;
+    position: absolute;
+    top: 5px;
+    right: 20px;
+}
+.loncom_public_card_box_toprcon {
+    width: 100%;
+    display: none;
+    position: absolute;
+    top: 20px;
+    z-index: 999;
+    background: #fff;
+}
+.loncom_public_card_box_toprcon a {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    display: block;
+    color: #666;
+    text-align: center;
+}
+.loncom_public_card_box_toprcon a:hover {
+    color: #fff;
+    background: #0064aa;
+}
+.loncom_public_card_box_center{
+  overflow: hidden;
+  padding-bottom: 38px;
+}
+.loncom_public_card_box_cimg{
+  width: 45%;
+  padding: 15px 0 0 15px; 
+}
+.loncom_public_card_box_cimg img {
+    max-height: 100%;
+    max-width: 100%;
+}
+.loncom_public_card_box_cinfo{
+  width: 55%;
+  height: 165px;
+}
+.loncom_public_card_box_cinfo p {
+    width: 100%;
+    float: left;
+    font-size: 12px;
+    margin-top: 20px;
+    color: #999;
+}
+.loncom_public_card_box_cinfo p em {
+    width: 70px;
+    overflow: hidden;
+    height: 14px;
+    float: left;
+    text-align: right;
+}
+.loncom_public_card_box_cinfo p span {
+    color: #00A512;
+}
+.loncom_public_card_box_bottom {
+    width: 100%;
+    height: 38px;
+    overflow: hidden;
+    line-height: 20px;
+    background: #E4E4E4;
+    display: none;
+    position: absolute;
+    bottom: 0;
+    padding: 9px 0;
+}
+.loncom_public_card_box_bottom div {
+    width: 33%;
+    float: left;
+    cursor: pointer;
+    text-align: center;
+    color: #333;
+}
+.loncom_public_card_box_bottom div:nth-of-type(2){
+  border-left: 1px solid #999999;
+  border-right: 1px solid #999999; 
+}
+
+.loncom_public_table{
+  padding: 20px 20px 0 20px;
+  height: auto;
+  width: 100%;
+}
+/*头部有切换的要用这个class和loncom_scroll_con平级*/
+.loncom_right_changecon>div{
+  display: none;
+}
+.loncom_right_changecon>div.loncom_active{
+  display: block;
+}
+
+/*趋势页面*/
+.loncom_tendency_title{
+  width: 100%;
+  height: 42px;
+  border-bottom: 1px solid #D2D2D2;
+}
+.loncom_tendency_con{
+  width: 100%;
+  height: 500px;
+}
+/*table搜索右边的按钮*/
+.loncom_tableform_btn{
+    position: absolute;
+    right: 0;
+    top: 4px;
+}
+
+@media (min-width: 1000px) {
+  .loncom_public_card li {
+    width: 33.33%;
+  }
+
+}
+@media (min-width: 1400px) {
+  .loncom_public_card li {
+    width: 25%;
+  }
+
+}
+
+
+
+
+
+ 
