@@ -81,6 +81,12 @@ em{
 .loncom_mb10{
   margin-bottom: 10px !important;
 }
+.loncom_mr20{
+   margin-right: 20px !important;
+ }
+ .loncom_mr50{
+   margin-right: 50px !important;
+ }
 .loncom_mb15{
   margin-bottom: 15px !important;
 }
@@ -93,8 +99,14 @@ em{
 .loncom_mb20{
   margin-bottom: 20px !important;
 }
+.loncom_mb25{
+  margin-bottom: 25px !important;
+}
 .loncom_mb50{
   margin-bottom: 50px !important;
+}
+.loncom_pt10{
+  padding-top: 10px !important;
 }
 .loncom_fl{
   float:left;
@@ -121,9 +133,15 @@ em{
 .loncom_dis_inlineblock{
   display: inline-block;
 }
+.loncom_pointer{
+  cursor: pointer;
+}
 .loncom_content{
   width: 100% !important;
   height: 100% !important;
+}
+.loncom_fontsize0{
+  font-size: 0;
 }
 /*重置element*/
 .el-table,.el-checkbox__label{
@@ -147,6 +165,16 @@ em{
 }
 .el-switch{
   height: 22px !important;
+}
+.el-form-item__content{
+  line-height: 0 !important;
+}
+.el-form-item{
+  margin-bottom: 0 !important;
+}
+.el-form-item__error{
+  left: auto !important;
+  right:0px;
 }
 /*table的底部btn按钮*/
 .loncom_position_relative{
@@ -231,9 +259,16 @@ em{
   width: 100%;
   min-height: 32px;
   line-height: 32px;
-  overflow: hidden;
   margin-bottom: 15px;
   font-size: 12px;
+}
+.loncom_list_boxform{
+  width: 100%;
+  min-height: 32px;
+  line-height: 32px;
+  padding-bottom: 20px;
+  font-size: 12px;
+  overflow: hidden;
 }
 .loncom_list_box_left{
     width: 18%;
@@ -250,6 +285,12 @@ em{
     width: 80%;
     float: left;
     color: #666;
+}
+.loncom_list_box_rightform{
+  width: 80%;
+  float: left;
+  color: #666;
+  padding-right: 130px;
 }
 .loncom_list_box_info{
   color: #999;

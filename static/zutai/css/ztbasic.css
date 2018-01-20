@@ -32,11 +32,40 @@
     font-size: 12px;
     font-family: "微软雅黑";
 }
+.loncom_zt_sidebar .el-tabs__header{
+    width: 100%;
+    height: 65px;
+    background: #17C4BB;
+    padding-left: 30px;
+}
+.loncom_zt_sidebar .el-tabs__item{
+    height: 65px;
+    line-height: 65px;
+    text-align: center;
+    color: #ccc !important;
+}
+.loncom_zt_sidebar .el-tabs__nav-wrap::after{
+    background-color: #17C4BB !important;
+}
+.loncom_zt_sidebar .el-tabs__item.is-active,.loncom_zt_sidebar .el-tabs__item:hover{
+    color: #fff !important;
+}
+.loncom_zt_sidebar .el-tabs__active-bar{
+    background-color: #fff !important;
+}
+.loncom_zt_sidebar .el-tabs,.loncom_zt_sidebar .el-tab-pane{
+    height: 100%;
+}
+.loncom_zt_sidebar .el-tabs__content{
+    height: -webkit-calc(100% - 65px);
+    height: -moz-calc(100% - 65px);
+    height: calc(100% - 65px);
+}
+
+
 .loncom_zt_sidebarcon{
     width: 100%;
-    height: 100%;
     padding: 10px;
-    position: relative;
 }
 .loncom_zt_sidebar_btn{
     width: 20px;
@@ -44,7 +73,7 @@
     display: block;
     line-height: 36px;
     text-align: center;
-    background: #16C5BB;
+    background: #17C4BB;
     position: absolute;
     top: 50%;
     margin-top: -18px;
@@ -60,6 +89,7 @@
     padding: 10px;
     background: #fff;
     border-radius: 4px;
+    margin-bottom: 10px;
 }
 .loncom_zt_mapimg{
     margin: 20px 0;
@@ -74,7 +104,7 @@
     height: 15px;
     display: inline-block;
     cursor: pointer;
-    color: #16c5bb;
+    color: #17C4BB;
     margin-left: 5px;
     font-size: 18px;
 }
@@ -84,5 +114,8 @@
     text-align: center;
     font-size: 32px;
     cursor: pointer;
+}
+.loncom_zt_mapadd:hover{
+    color: #17C4BB;
 }
 
