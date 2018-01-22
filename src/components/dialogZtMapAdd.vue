@@ -1,14 +1,14 @@
 <template>
-    <el-dialog :title="dialogInfo.title" :visible.sync="dialogInfo.visible" :width="dialogInfo.width">
+    <el-dialog :title="dialogInfo.title" :visible.sync="dialogInfo.visible" :width="dialogInfo.width" @before-close="closeDialog">
         <div class="loncom_public_table loncom_dialog_scroll" style="height:300px;">
-            <el-form :model="dialog_info" :rules="formRules" ref="formInfo">
+            <el-form :model="map_list" :rules="formRules" ref="formInfo">
                 <div class="loncom_list_boxform">
                     <div class="loncom_list_box_left">
                         <em>*</em>地图名称
                     </div>
                     <div class="loncom_list_box_right">
-                        <el-form-item prop="data.name">
-                            <el-input size="small" v-model="dialog_info.data.name"></el-input>
+                        <el-form-item prop="name">
+                            <el-input size="small" v-model="map_list.name"></el-input>
                         </el-form-item>
                     </div>
                 </div>
@@ -17,8 +17,8 @@
                         <em>*</em>站点
                     </div>
                     <div class="loncom_list_box_right">
-                        <el-form-item prop="data.addr">
-                            <el-select v-model="dialog_info.data.addr" placeholder="请选择">
+                        <el-form-item prop="addr">
+                            <el-select v-model="map_list.addr" placeholder="请选择">
                                 <el-option
                                 v-for="item in addr_info"
                                 :key="item.value"
@@ -34,7 +34,7 @@
                         详情
                     </div>
                     <div class="loncom_list_box_right">
-                        <textarea style="height: 100px;" placeholder="请输入内容" v-model="dialog_info.data.descriotion"> </textarea>
+                        <textarea style="height: 100px;" placeholder="请输入内容" v-model="map_list.descriotion"> </textarea>
                     </div>
                 </div>
             </el-form>
@@ -57,14 +57,13 @@ export default {
     },
     data() {
         return {
-            //备份数据
             dialog_info:this.dialogInfo,
-           
+            map_list:{},
             formRules:{
-                'data.name':[
+                name:[
                     { required: true, message: '请填写地图名称', trigger: 'blur' },
                 ],
-                'data.addr':[
+                addr:[
                     { required: true, message: '请选择站点', trigger: 'blur' },
                 ]
             },
@@ -86,21 +85,36 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if(valid){ //验证通过
                     this.dialogInfo.visible=false;   
+                    console.log(this.dialogInfo)
+                    if(this.dialogInfo.type=="edit"){
+                        this.$parent.map_list.splice(this.dialogInfo.index,1,this.map_list);
+                    }else{
+                        console.log(123)
+                        this.$parent.map_list.push(this.map_list);
+                    }
+                    this.map_list={};
+                    this.dialogInfo.data={};
                 }
             })
         },
         //取消操作
         dialogCancel:function(){
+            this.map_list={};
+            this.dialogInfo.data={};
             this.dialogInfo.visible=false;   
         },
+        //关闭dialog
+        closeDialog:function(){
+            this.map_list={};
+            this.dialogInfo.data={};
+        },
+        
         
     },
+    
     watch:{
-        dialogInfo(val){
-            this.add_info=val;
-        },
-        add_info(val){
-            this.$emit('dialogInfo',val);
+        'dialog_info.data':function(val,oldVal){
+            this.map_list=val;
         }
     },
     props:["dialogInfo"]  

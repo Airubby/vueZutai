@@ -7,15 +7,15 @@
                 </el-tab-pane>
                 <el-tab-pane label="设备地图" name="second" class="el-tab-pane1">
                     <div class="loncom_zt_sidebarcon loncom_zt_sidebarcon1">
-                        <div class="loncom_zt_sidebarbox" v-for="item in map_list">
+                        <div class="loncom_zt_sidebarbox" v-for="(item,index) in map_list">
                             <div class="loncom_zt_maptitle">{{item.name}}</div>
                             <div class="loncom_zt_mapimg">
                                 <img :src="'static/zutai/images/img.png'">
                             </div>
                             <div class="loncom_zt_map_btn">
-                                <span><i class="fa fa-edit"></i></span>
-                                <span><i class="fa fa-pencil"></i></span>
-                                <span><i class="fa fa-trash"></i></span>
+                                <span @click="editItem(item,index)"><i class="fa fa-edit"></i></span>
+                                <span><i class="fa fa-pencil" @click="editMap(item,index)"></i></span>
+                                <span><i class="fa fa-trash" @click="removeMap(item,index)"></i></span>
                             </div>
                         </div>
                         <div class="loncom_zt_sidebarbox loncom_zt_mapadd" @click="addMap">
@@ -33,7 +33,7 @@
 
             </div>
         </div>
-        <!--选择设备分类-->
+        <!--电子地图新增编辑-->
         <DialogZtMapAdd v-bind:dialogInfo="mapInfo"></DialogZtMapAdd>
     </div>
 </template>
@@ -70,7 +70,6 @@ export default {
            map_list:[],
            //新增电子地图
             mapInfo:{
-                title:"电子地图",
                 visible:false,
                 width:"500px",
                 data:{},
@@ -99,8 +98,35 @@ export default {
         },
         //新增电子地图
         addMap:function(){
+            this.mapInfo.title="新增电子地图";
+            this.mapInfo.type="add";
             this.mapInfo.visible=true;
-        }
+        },
+        //编辑电子地图
+        editItem:function(item,index){
+            this.mapInfo.title="编辑电子地图";
+            this.mapInfo.type="edit";
+            this.mapInfo.index=index;
+            this.mapInfo.visible=true;
+            //var _item=JSON.parse(JSON.stringify(item));
+            var _item=Object.assign({}, item);
+            this.mapInfo.data=_item;
+        },
+        //编辑电子地图
+        editMap:function(item,index){
+            this.$router.push({path:'/editMap',query:{item:item}});
+        },
+        //删除电子地图
+        removeMap:function(item,index){
+            this.$confirm("删除此电子地图?", '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.map_list.splice(index,1);
+	       });
+            
+        },
 
     },
     components:{DialogZtMapAdd}

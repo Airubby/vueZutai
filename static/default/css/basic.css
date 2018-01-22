@@ -511,6 +511,7 @@ em{
   left: 0;
   color: #fff;
   position: absolute;
+  z-index: 999;
   transition: all 0.5s ease-in
 }
 .loncom_sidebar_top{

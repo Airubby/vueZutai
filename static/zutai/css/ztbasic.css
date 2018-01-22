@@ -10,6 +10,7 @@
     left: 0;
     color: #fff;
     position: absolute;
+    z-index: 999;
     transition: all 0.5s ease-in;
 }
 .loncom_sidebar_right {
@@ -22,9 +23,27 @@
 .loncom_mb10{
     margin-bottom: 10px !important;
 }
-/*以上是小微的样式，整合时可以去掉*/
+
+/*以上是小微的样式，整合时可以去掉,有些也用了小微的样式，这里没写了*/
 .loncom_zt_sidebar_right{
     padding-left: 225px;
+}
+.loncom_zt_edit_right{
+    padding-left: 225px;
+    padding-top: 65px;
+}
+.loncom_ztright_top{
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: all 0.5s ease-in;
+}
+.loncom_zt_backFull{
+    position: absolute;
+    left: 50%;
+    margin-left: -50px;
+    top: -55px;
+    transition: all 0.5s ease-in;
 }
 .loncom_zt_sidebar{
     width: 225px;
@@ -118,4 +137,57 @@
 .loncom_zt_mapadd:hover{
     color: #17C4BB;
 }
+.loncom_zt_editmap_btn{
+    padding-right: 20px;
+}
+.loncom_zt_editmap_btn span{
+    color: #5BEAE2;
+    margin-left: 10px;
+    font-size: 30px;
+    line-height: 65px;
+    cursor: pointer;
+}
+/**/
 
+.loncom_zt_edititem .el-collapse, 
+.loncom_zt_edititem .el-collapse-item__header,
+.loncom_zt_edititem .el-collapse-item__wrap{
+    border-bottom: 4px solid #26344b;
+}
+.loncom_zt_edititem .el-collapse {
+    border-top: 4px solid #26344b;
+}
+.loncom_zt_edititem .el-carousel__mask,
+.loncom_zt_edititem .el-cascader-menu, 
+.loncom_zt_edititem .el-cascader-menu__item.is-disabled:hover, 
+.loncom_zt_edititem .el-collapse-item__wrap{
+    background: #26344B !important;
+}
+.loncom_zt_edititem .el-collapse-item__header{
+    background: #1C2B38 !important;
+    text-align: center;
+    color: #fff;
+}
+.loncom_zt_edititem .el-collapse-item__arrow{
+    font-weight: bold;
+    font-size: 16px;
+}
+.loncom_zt_edititem .el-collapse-item__content{
+    color: #fff !important;
+}
+.loncom_zt_edititem .el-collapse-item.is-active .el-collapse-item__header{
+    color: #16c5bb;
+}
+.loncom_zt_item span{
+    display: block;
+    margin-right: 8px;
+    float: left;
+    cursor: move;
+}
+.loncom_zt_item span:nth-of-type(3n){
+    margin-right: 0;
+}
+.loncom_zt_item img{
+    width: 60px;
+    max-height: 60px;
+}
