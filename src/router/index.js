@@ -4,6 +4,8 @@ import Index from '@/page/index'
 import Login from '@/page/login'
 import EditMap from '@/page/editMap'
 
+import TestIndex from '@/page/testIndex'
+
 Vue.use(Router)
 
 export default new Router({
@@ -21,6 +23,9 @@ export default new Router({
     },{
       path: '/editMap',
       component: EditMap
+    },{
+      path: '/testIndex',
+      component: TestIndex
     }
 
   ]

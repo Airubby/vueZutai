@@ -4,6 +4,7 @@
             <el-tabs v-model="activeName">
                 <el-tab-pane label="上传图片" name="first">
                     <div class="loncom_pt10">
+                     
                      <el-upload
                             action=""
                             list-type="picture-card"
@@ -17,6 +18,7 @@
                         <el-dialog :visible.sync="dialogVisible" size="tiny">
                             <img width="100%" :src="dialogImageUrl" alt="">
                         </el-dialog>
+
                     </div>
                 </el-tab-pane>
                 <el-tab-pane label="图片库" name="second">
@@ -54,17 +56,14 @@ export default {
     methods:{
         //保存的操作
         dialogSure:function(){
-            console.log(this.dialogImageUrl)
-            console.log(this.imageUrlList)
             if(this.dialogImageUrl!=""){
-                this.$parent.canvas_img=this.dialogImageUrl;
+                //this.$parent.canvas_img=this.dialogImageUrl;
+                this.$parent.canvas_img='room.png'
                 this.dialogInfo.visible=false;   
-                imageUrlList:[];
+                this.imageUrlList=[];
+                this.dialogImageUrl="";
             }else{
-                this.$message({
-                    message: "请上传图片或者选择图片!",
-                    type: 'warning'
-                });
+                this.$message.warning("请上传图片或者选择图片!");
             }
         },
         //取消操作
@@ -80,17 +79,16 @@ export default {
             this.dialogVisible = true;
         },
         handleChange:function(file) {
+            
             var fileArry=file.name.split(".");
             var fileType=fileArry[fileArry.length-1];
             if(fileType=="png"||fileType=="jpg"||fileType=="PNG"||fileType=="JPG"){
                 this.dialogImageUrl=file.url;
-                this.imageUrlList[0].name=file.name;
-                this.imageUrlList[0].url=file.url;
+                this.imageUrlList.push({name:file.name,url:file.url})
+                // this.imageUrlList[0].name=file.name;
+                // this.imageUrlList[0].url=file.url;
             }else{
-                this.$message({
-                    message: "图片格式只能为jpg或png!",
-                    type: 'error'
-                });
+                this.$message.error("图片格式只能为jpg或png!");
             }
        }
         

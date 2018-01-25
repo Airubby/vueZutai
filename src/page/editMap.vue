@@ -7,12 +7,16 @@
                        <el-collapse v-model="activeItem" accordion>
                             <el-collapse-item title="视频" name="first">
                                 <div class="loncom_zt_sidebarcon loncom_zt_item">
-                                    <span v-for="item in video_list"><img :src="'static/zutai/images/'+item.img"></span>
+                                    <span v-for="item in video_list">
+                                        <img :data-setting='item.setting' :data-type="item.type" :data-devid="item.devid" :id='item.id' :src="'static/zutai/images/'+item.img" draggable="true" @dragstart="drag($event)">
+                                    </span>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="门禁" name="second">
                                 <div class="loncom_zt_sidebarcon loncom_zt_item">
-                                    <span v-for="item in access_list"><img :src="'static/zutai/images/'+item.img"></span>
+                                   <span v-for="item in access_list">
+                                        <img :data-setting='item.setting' :data-type="item.type" :data-devid="item.devid" :id='item.id' :src="'static/zutai/images/'+item.img" draggable="true" @dragstart="drag($event)">
+                                    </span>
                                 </div>
                             </el-collapse-item>
                         </el-collapse>
@@ -26,7 +30,7 @@
         <div class="loncom_sidebar_right loncom_zt_edit_right" ref="content">
             <div class="loncom_public_top loncom_ztright_top" ref="ztright">
                 <div class="loncom_fr loncom_zt_editmap_btn">
-                    <span><i class="fa fa-chevron-left"></i></span>
+                    <span @click="backPage"><i class="fa fa-chevron-left"></i></span>
                     <span><i class="fa fa-mail-reply"></i></span>
                     <span><i class="fa fa-mail-forward"></i></span>
                     <span><i class="fa fa-remove"></i></span>
@@ -36,18 +40,23 @@
                 </div>
             </div>
             <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
-            <div class="loncom_zt_canvas">
-                <img width="100%" :src="canvas_img" alt="">
+            <div id="canvas" ref="canvas" class="loncom_zt_canvas"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url(static/zutai/images/"+canvas_img+") center center / contain no-repeat"}'>
+                <!--拖拽的设备-->
+                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item"></ZtDevice></span>
+                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item"></ZtDevice></span>
             </div>
         </div>
         <!--上传图片-->
         <DialogZtUploadImg v-bind:dialogInfo="upload_img"></DialogZtUploadImg>
+        
     </div>
 </template>
 
 
 <script>
 import DialogZtUploadImg from '../components/dialogZtUploadImg.vue'
+import ZtDevice from '../components/ztDevice.vue'
+import Vue from 'vue' 
 export default {
     created () {
         if(JSON.stringify(localStorage.loginInfo) == undefined){
@@ -62,10 +71,10 @@ export default {
         
     },
     mounted() {
-        tabScroll(0)
-        $(window).resize(function () {
-            tabScroll(0)
-        });
+        //tabScroll(0)
+        // $(window).resize(function () {
+        //     tabScroll(0)
+        // });
     },
     data() {
        return {
@@ -75,30 +84,44 @@ export default {
            activeName: 'first',
            //手风琴切换
            activeItem: 'first',
+           //存储拖拽过来的组件
+           img_html:'',
+           //开始拉取的设备的offset获取,点击设备时点击的那个点相对于自己的偏移量
+           img_ev:'',
+           //存储图片的width，height，缩放后更改这个值，新拉进来的设备就按这个值设置长宽
+           img_info:{
+               width:60,
+               height:60
+           },
+           //点击设备时点击的那个点相对于自己的偏移量
+           pic_offset:{
+               left:'',
+               top:''
+           },
            //视频侧边图片
            video_list:[
-                {img:'video.png'},
-                {img:'video.png'},
-                {img:'video.png'},
-                {img:'video.png'},
+                {id:'1',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000105',state:false},
+                {id:'2',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000106',state:false,width:'60',height:'60'},
+                {id:'3',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000107',state:false,width:'60',height:'60'},
+                {id:'4',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000108',state:false,width:'60',height:'60'},
            ],
            //门禁侧边图片
           access_list:[
-                {img:'access.png'},
-                {img:'access.png'},
-                {img:'access.png'},
-                {img:'access.png'},
+                {id:'5',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000105',state:false,width:'60',height:'60'},
+                {id:'6',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000106',state:false,width:'60',height:'60'},
+                {id:'7',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000107',state:false,width:'60',height:'60'},
+                {id:'8',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000108',state:false,width:'60',height:'60'},
+                
            ],
            //图片展示
-           canvas_img:{},
+           canvas_img:'',
            //上传图片
            upload_img:{
                 title:'图片上传',
                 visible:false,
                 width:"500px",
-                data:{},
            },
- 
+           
 
        }
    },
@@ -123,6 +146,7 @@ export default {
         },
         //上传图片
         uploadImg:function(){
+            
             this.upload_img.visible=true;
         },
         //全屏
@@ -134,7 +158,7 @@ export default {
                 "padding-left":"0",
                 "padding-top":"0",
             });
-            $(this.$refs.navbtnspan).hide();
+            $(this.$refs.navbtnspan).hide(500);
         },
         //退出全屏
         backFullScreen:function(){
@@ -147,9 +171,114 @@ export default {
             });
             $(this.$refs.navbtnspan).show();
         },
+        //返回主页面
+        backPage:function(){
+            this.$router.push({path:'/'});
+        },
+        //拖拽
+        drag:function(ev){
+            //console.log(ev)
+            //console.log(this)
+            this.img_ev=ev;
+            //this.img_html=this;
+            ev.dataTransfer.setData("id",ev.target.id);  //只能为id，其它属性不行
+        },
+        allowDrop:function (ev) {
+            ev.preventDefault();
+        },
+        drop:function(ev){
+            //console.log(ev)
+            console.log(this.img_html)
+            
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("id");
+            if(data){  //第一次拖进来的时候赋了id的
+                var setting= $("#"+data).data("setting")//获取setting参数
+                var type= $("#"+data).data("type");//获取组件类型
+                var devid= $("#"+data).data("devid");//获取组件设备ID
+                var id="lon_"+type+devid;
+                var left,top;
+                if(type=="video"){  //视频
+                    for(var i=0;i<this.video_list.length;i++){
+                        if(this.video_list[i].devid==devid){
+                            if(this.video_list[i].state==true){
+                                this.$message.error('设备已存在！');
+                                return;
+                            }else{
+                                // console.log(ev);
+                                // this.video_list[i].state=true;
+                                // this.video_list[i].pic_size={width:'60',height:'60'};
+                                // this.video_list[i].canvas_size={width:$(this.$refs.canvas).width(),height:$(this.$refs.canvas).height()};
+                                // this.video_list[i].pic_offset={left:ev.offsetX-this.img_ev.offsetX,top:ev.offsetY-this.img_ev.offsetY};
+                                console.log(ev);
+                                this.video_list[i].state=true;
+                                //右边电子地图的宽高
+                                this.video_list[i].canvas_size={width:$(this.$refs.canvas).width(),height:$(this.$refs.canvas).height()};
+                                //拖拽的设备点击的那个点相对于设备自己的偏移
+                                this.video_list[i].pic_offset={left:this.img_ev.offsetX,top:this.img_ev.offsetY};  
+                                //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻
+                                this.video_list[i].pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
+                            }
+                        }
+                    }
+                }else if(type=="access"){
+                    for(var i=0;i<this.access_list.length;i++){
+                        if(this.access_list[i].devid==devid){
+                            if(this.access_list[i].state==true){
+                                this.$message.error('设备已存在！');
+                                return;
+                            }else{
+                                this.access_list[i].state=true;
+                            }
+                        }
+                    }
+                }
+            }else{
+                console.log(this.img_html);
+                // this.img_html.pic_offset=this.pic_offset;
+                // this.img_html.pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
+                //this.img_html.address()
+                console.log(ev.offsetX)
+                console.log(this.img_ev.offsetX)
+                var left,top;
+                if(ev.offsetX-this.img_ev.offsetX<0){
+                    left=0;
+                }else if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
+                    left=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
+                }else{
+                    left=ev.offsetX-this.img_ev.offsetX
+                }
+                if(ev.offsetY-this.img_ev.offsetY<0){
+                    top=0;
+                }else if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()){
+                    top=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
+                }else{
+                    top=ev.offsetY-this.img_ev.offsetY
+                }
+                $(this.img_html.$el).css({
+                    "left":left+"px",
+                    "top":top+"px",
+                    "width":this.img_html.$el.offsetWidth+"px",
+                    "height":this.img_html.$el.offsetHeight+"px",
+                });
+            }
+            
+            // console.log(ev);
+            // console.log(this.img_html);
+            // console.log($(this.img_html.$el).width());
+            // console.log(ev.offsetX);
+            // var clientWidth=ev.target.clientWidth;
+            // var clientHeight=ev.target.clientHeight;
+
+            // var loc=getLoc(ev,this.img_html.$el);
+            // this.img_html.$el.style.left=loc.x+"%";
+            // this.img_html.$el.style.top=loc.y+"%";
+           
+        },
+
 
     },
-    components:{DialogZtUploadImg}
+    components:{DialogZtUploadImg,ZtDevice}
 }
 </script>
 
