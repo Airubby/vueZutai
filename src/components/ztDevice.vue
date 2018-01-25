@@ -5,24 +5,21 @@
         :data-devid="dialogInfo.devid" 
         :id='"lon_"+dialogInfo.type+dialogInfo.devid' 
         :src="'static/zutai/images/'+dialogInfo.img" 
-        
         :ref='"lon_"+dialogInfo.type+dialogInfo.devid'
         draggable="true" @dragstart="drag($event)" class="loncom_canvas_samllimg">
 </template>
-<!--,left:dialogInfo.pic_offset.left+"px",top:dialogInfo.pic_offset.top+"px"
-:style='{width:dialogInfo.pic_size.width+"px",height:dialogInfo.pic_size.height+"px"}'
--->
+
 
 <script>
 
 export default {
     created () {
-        console.log(getBackgroundImageSize($("#canvas")))
+        
     },
     mounted() {
         this.address();
         var _this=this;
-        $(document.body).resize(function () {
+        $("#canvas").resize(function () {
             _this.nowOffset();
         });
     },
@@ -33,10 +30,10 @@ export default {
                 width:$("#canvas").width(),
                 height:$("#canvas").height()
            },
-           //设备图片的偏移位置
+           //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
            save_location:{
-                left:'',
-                top:''
+                x:'',
+                y:''
             },
             //背景图片的尺寸
             save_pic:getBackgroundImageSize($("#canvas")),
@@ -45,12 +42,6 @@ export default {
                 height: 60
             },
 
-
-            //设备图片最左边离电子地图最左边的距离，最头部的距离
-            pic_tocanvas_distance:{
-                x:'',
-                y:'',
-            }
 
        }
    },
@@ -61,45 +52,42 @@ export default {
             console.log(ev);
             this.$parent.img_ev=ev;
             this.$parent.img_html=this;
-            
-            this.save_location.x=this.$el.offsetLeft;
-            this.save_location.y=this.$el.offsetTop;
         },
         address:function(){
             console.log(this)
-            //设备最左边距离右边电子地图的最左边的距离
-            this.pic_tocanvas_distance.x=this.dialogInfo.pic_tocanvas_offset.left-this.dialogInfo.pic_offset.left<0?0:this.dialogInfo.pic_tocanvas_offset.left-this.dialogInfo.pic_offset.left;
-            this.pic_tocanvas_distance.y=this.dialogInfo.pic_tocanvas_offset.top-this.dialogInfo.pic_offset.top<0?0:this.dialogInfo.pic_tocanvas_offset.top-this.dialogInfo.pic_offset.top;
-
+            //第一次拖拽进来的时候执行
+            //设备最左边距离右边电子地图的最左边,上边的距离
+            if(this.dialogInfo.pic_tocanvas_offset.left-this.dialogInfo.pic_offset.left<0){
+                this.save_location.x=0;
+            }else if(this.dialogInfo.pic_tocanvas_offset.left+(this.$parent.img_info.width-this.dialogInfo.pic_offset.left)>$("#canvas").width()){
+                this.save_location.x=$("#canvas").width()-this.$parent.img_info.width;
+            }else{
+                this.save_location.x=this.dialogInfo.pic_tocanvas_offset.left-this.dialogInfo.pic_offset.left
+            }
+            if(this.dialogInfo.pic_tocanvas_offset.top-this.dialogInfo.pic_offset.top<0){
+                this.save_location.y=0;
+            }else if(this.dialogInfo.pic_tocanvas_offset.top+(this.$parent.img_info.height-this.dialogInfo.pic_offset.top)>$("#canvas").height()){
+                this.save_location.y=$("#canvas").height()-this.$parent.img_info.height;
+            }else{
+                this.save_location.y=this.dialogInfo.pic_tocanvas_offset.top-this.dialogInfo.pic_offset.top
+            }
             $(this.$el).css({
-                "left":this.pic_tocanvas_distance.x+"px",
-                "top":this.pic_tocanvas_distance.y+"px",
+                "left":this.save_location.x+"px",
+                "top":this.save_location.y+"px",
                 "width":this.$parent.img_info.width+"px",
                 "height":this.$parent.img_info.height+"px",
             });
 
         },
         nowOffset:function(){
-            //console.log(this)
-            console.log(this.$el)
             // 位置计算 @save_back容器页面大小width,height  @save_location保存位置left,top  @save_pic 背景图片大小width,height 
             // @now_back改变后的容器页面大小width,height  @pic_size 控件大小
             var now_back={
                 width: $("#canvas").width(),
                 height: $("#canvas").height()
             }
-            console.log(this.save_back)
-            console.log(this.save_location)
-             console.log(this.save_pic)
-              console.log(this.pic_size)
-              debugger
-            var loc = nowLocation(this.save_back, this.pic_tocanvas_distance,this.save_pic,now_back,this.pic_size);
+            var loc = nowLocation(this.save_back, this.save_location,this.save_pic,now_back,this.pic_size);
             console.log(loc)
-         
-            // this.$el.style.left=loc.x.toFixed(2)+"px";
-            // this.$el.style.top=loc.y.toFixed(2)+"px";
-            // this.$el.style.width=loc.width.toFixed(2)+"px";
-            // this.$el.style.height=loc.height.toFixed(2)+"px";
             $(this.$el).css({
                 "left":loc.x.toFixed(2)+"px",
                 "top":loc.y.toFixed(2)+"px",

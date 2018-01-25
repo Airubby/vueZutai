@@ -19,35 +19,12 @@ function getBackgroundImageSize(e){
     if (backImg && backImg != "none") {
         var img = new Image();
         img.src = backImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-
-        function getImageSize(img) {
-            var size = {
-                width: img.width,
-                height: img.height
-            }
-            //if (size.width == 0 || size.height == 0) {
-            //    size = getImageSize(img);
-            //}
-            console.log(size)
-            return size;
+        return {
+            width:img.width,
+            height:img.height
         }
-        return getImageSize(img);
     }
 
-    // //本地测试用
-    // //url("http://192.168.10.188:8081/")
-    // var fileArry=backImg.split("/");
-    // console.log(fileArry)  //['url("http:','','192.168.10.188:8081','")']
-    // if(fileArry[3]!='")'){
-    //     var img = new Image();
-    //     img.src = backImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
-    //     console.log(img.width)
-    //     console.log(img.height)
-    //     return {
-    //         width: img.width,
-    //         height: img.height
-    //     }
-    // }
     return {
         width: $(e).width(),
         height: $(e).height()
@@ -56,7 +33,6 @@ function getBackgroundImageSize(e){
 //位置计算 @save_back容器页面大小width,height  @save_location保存位置left,top  @save_pic 背景图片大小width,height 
 // @now_back改变后的容器页面大小width,height  @pic_size 控件大小
 function nowLocation(save_back, save_location, save_pic, now_back, pic_size) {
-    debugger
     var mylocation = {};//返回位置
     if ((save_location.x - save_back.width <= 3 && save_location.x - save_back.width >= -3) && (save_location.y - save_back.height <= 3 && save_location.y - save_back.height >= -3)) {//保存地点靠近中心点3像素范围内，直接返回中心店
         mylocation.x = now_back.width / 2;

@@ -30,13 +30,28 @@
         <div class="loncom_sidebar_right loncom_zt_edit_right" ref="content">
             <div class="loncom_public_top loncom_ztright_top" ref="ztright">
                 <div class="loncom_fr loncom_zt_editmap_btn">
-                    <span @click="backPage"><i class="fa fa-chevron-left"></i></span>
-                    <span><i class="fa fa-mail-reply"></i></span>
-                    <span><i class="fa fa-mail-forward"></i></span>
-                    <span><i class="fa fa-remove"></i></span>
-                    <span><i class="fa fa-save"></i></span>
-                    <span @click="uploadImg"><i class="fa fa-cloud-upload"></i></span>
-                    <span @click="fullScreen"><i class="fa fa-arrows-alt"></i></span>
+                    <el-tooltip class="item" content="返回" placement="top-end">
+                        <span @click="backPage"><i class="fa fa-chevron-left"></i></span>
+                    </el-tooltip>
+                    <el-tooltip class="item" content="上一步操作" placement="top-end">
+                        <span><i class="fa fa-mail-reply"></i></span>
+                    </el-tooltip>
+                    <el-tooltip class="item" content="下一步操作" placement="top-end">
+                        <span><i class="fa fa-mail-forward"></i></span>
+                    </el-tooltip>
+                    <el-tooltip class="item" content="删除设备" placement="top-end">
+                        <span><i class="fa fa-remove"></i></span>
+                    </el-tooltip>
+                    <el-tooltip class="item" content="保存操作" placement="top-end">
+                        <span><i class="fa fa-save"></i></span>
+                    </el-tooltip>
+                    <el-tooltip class="item" content="上传机房图" placement="top-end">
+                        <span @click="uploadImg"><i class="fa fa-cloud-upload"></i></span>
+                    </el-tooltip>
+                    <el-tooltip class="item" content="全屏预览" placement="top-end">
+                        <span @click="fullScreen" ><i class="fa fa-arrows-alt"></i></span>
+                    </el-tooltip>
+                    
                 </div>
             </div>
             <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
@@ -88,29 +103,25 @@ export default {
            img_html:'',
            //开始拉取的设备的offset获取,点击设备时点击的那个点相对于自己的偏移量
            img_ev:'',
-           //存储图片的width，height，缩放后更改这个值，新拉进来的设备就按这个值设置长宽
+           //存储图片的width，height，缩放不更改这个值，新拉进来的设备就按这个值设置长宽
            img_info:{
                width:60,
                height:60
            },
-           //点击设备时点击的那个点相对于自己的偏移量
-           pic_offset:{
-               left:'',
-               top:''
-           },
+           
            //视频侧边图片
            video_list:[
                 {id:'1',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000105',state:false},
-                {id:'2',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000106',state:false,width:'60',height:'60'},
-                {id:'3',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000107',state:false,width:'60',height:'60'},
-                {id:'4',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000108',state:false,width:'60',height:'60'},
+                {id:'2',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000106',state:false},
+                {id:'3',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000107',state:false},
+                {id:'4',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000108',state:false},
            ],
            //门禁侧边图片
           access_list:[
-                {id:'5',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000105',state:false,width:'60',height:'60'},
-                {id:'6',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000106',state:false,width:'60',height:'60'},
-                {id:'7',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000107',state:false,width:'60',height:'60'},
-                {id:'8',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000108',state:false,width:'60',height:'60'},
+                {id:'5',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000105',state:false},
+                {id:'6',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000106',state:false},
+                {id:'7',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000107',state:false},
+                {id:'8',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000108',state:false},
                 
            ],
            //图片展示
@@ -146,7 +157,6 @@ export default {
         },
         //上传图片
         uploadImg:function(){
-            
             this.upload_img.visible=true;
         },
         //全屏
@@ -197,7 +207,7 @@ export default {
                 var type= $("#"+data).data("type");//获取组件类型
                 var devid= $("#"+data).data("devid");//获取组件设备ID
                 var id="lon_"+type+devid;
-                var left,top;
+                var list_item;
                 if(type=="video"){  //视频
                     for(var i=0;i<this.video_list.length;i++){
                         if(this.video_list[i].devid==devid){
@@ -205,19 +215,8 @@ export default {
                                 this.$message.error('设备已存在！');
                                 return;
                             }else{
-                                // console.log(ev);
-                                // this.video_list[i].state=true;
-                                // this.video_list[i].pic_size={width:'60',height:'60'};
-                                // this.video_list[i].canvas_size={width:$(this.$refs.canvas).width(),height:$(this.$refs.canvas).height()};
-                                // this.video_list[i].pic_offset={left:ev.offsetX-this.img_ev.offsetX,top:ev.offsetY-this.img_ev.offsetY};
-                                console.log(ev);
                                 this.video_list[i].state=true;
-                                //右边电子地图的宽高
-                                this.video_list[i].canvas_size={width:$(this.$refs.canvas).width(),height:$(this.$refs.canvas).height()};
-                                //拖拽的设备点击的那个点相对于设备自己的偏移
-                                this.video_list[i].pic_offset={left:this.img_ev.offsetX,top:this.img_ev.offsetY};  
-                                //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻
-                                this.video_list[i].pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
+                                list_item=this.video_list[i];
                             }
                         }
                     }
@@ -229,18 +228,23 @@ export default {
                                 return;
                             }else{
                                 this.access_list[i].state=true;
+                                list_item=this.access_list[i];
                             }
                         }
                     }
                 }
-            }else{
+                //拖拽的设备点击的那个点相对于设备自己的偏移
+                list_item.pic_offset={left:this.img_ev.offsetX,top:this.img_ev.offsetY};  
+                //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻
+                list_item.pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
+            }else{ //在地图上拖拽
                 console.log(this.img_html);
                 // this.img_html.pic_offset=this.pic_offset;
                 // this.img_html.pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
                 //this.img_html.address()
                 console.log(ev.offsetX)
                 console.log(this.img_ev.offsetX)
-                var left,top;
+                var left,top; //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
                 if(ev.offsetX-this.img_ev.offsetX<0){
                     left=0;
                 }else if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
@@ -261,6 +265,8 @@ export default {
                     "width":this.img_html.$el.offsetWidth+"px",
                     "height":this.img_html.$el.offsetHeight+"px",
                 });
+                this.img_html.save_location.x=left;
+                this.img_html.save_location.y=top;
             }
             
             // console.log(ev);
