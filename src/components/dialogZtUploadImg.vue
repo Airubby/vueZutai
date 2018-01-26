@@ -58,7 +58,8 @@ export default {
         dialogSure:function(){
             if(this.dialogImageUrl!=""){
                 //this.$parent.canvas_img=this.dialogImageUrl;
-                this.$parent.canvas_img='room.png'
+                console.log(this.imageUrlList)
+                this.$parent.canvas_img='static/zutai/images/room.png'
                 this.dialogInfo.visible=false;   
                 this.imageUrlList=[];
                 this.dialogImageUrl="";

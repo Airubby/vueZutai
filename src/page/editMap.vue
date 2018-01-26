@@ -1,5 +1,5 @@
 <template>
-    <div class="loncom_content">
+    <div class="loncom_content" ref="loncom_zt_content" @click="hideDevice">
         <div class="loncom_sidebar loncom_zt_sidebar" ref="sidebar">
             <el-tabs v-model="activeName">
                 <el-tab-pane label="设备素材" name="first" class="el-tab-pane0">
@@ -55,10 +55,59 @@
                 </div>
             </div>
             <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
-            <div id="canvas" ref="canvas" class="loncom_zt_canvas"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url(static/zutai/images/"+canvas_img+") center center / contain no-repeat"}'>
+            <div id="canvas" ref="canvas" class="loncom_zt_canvas"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
+                <!--拖拽的设备详情-->
+                <div class="device_detail" ref="deviceShowDetail" @click="preventClick($event)">
+                    <div class="device_detail_title">
+                        <h2>部件属性</h2>
+                    </div>
+                    <div class="device_detail_con loncom_public_tabbox1">
+                        <el-form ref="form" :model="form" label-width="70px" class="loncom_public_tabboxcon1">
+                            <el-form-item label="自定图片">
+                                <el-upload
+                                        action=""
+                                        :on-remove="handleRemove"
+                                        :file-list="form.background"
+                                        :on-success="handlesuccess"
+                                        :limit="1"
+                                        list-type="picture">
+                                    <el-button size="small" type="primary">点击上传</el-button>
+                                </el-upload>
+                            </el-form-item>
+                            <el-form-item label="名称" class="loncom_mt20">
+                                <el-input v-model="form.title" size="small"></el-input>
+                            </el-form-item>
+                            <el-form-item label="宽" class="loncom_mt20">
+                                <el-input v-model="form.width" size="small"></el-input>
+                            </el-form-item>
+                            <el-form-item label="高" class="loncom_mt20">
+                                <el-input v-model="form.height" size="small"></el-input>
+                            </el-form-item>
+                            <el-form-item label="设备点" class="loncom_mt20">
+                                <el-select multiple v-model="form.tipall" placeholder="选择显示设备点位" size="small">
+                                    <el-option v-for="item in tipall" :key="item.name" :label="item.name" :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item label="活动告警" class="loncom_mt20">
+                                <el-switch v-model="form.hisalarm"></el-switch>
+                            </el-form-item>
+                            <el-form-item label="告警设置" size="small" class="loncom_mt20">
+                                <el-color-picker v-model="form.color4"></el-color-picker>
+                                <el-color-picker v-model="form.color3"></el-color-picker>
+                                <el-color-picker v-model="form.color2"></el-color-picker>
+                                <el-color-picker v-model="form.color1"></el-color-picker>
+                            </el-form-item>
+                            <el-form-item class="loncom_mt20">
+                                <el-button type="primary" @click="onSubmit">确认</el-button>
+                            </el-form-item>
+
+                        </el-form>
+                    </div>
+                </div>
                 <!--拖拽的设备-->
-                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item"></ZtDevice></span>
-                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item"></ZtDevice></span>
+                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:showDetail="showDetail"></ZtDevice></span>
+                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:showDetail="showDetail"></ZtDevice></span>
             </div>
         </div>
         <!--上传图片-->
@@ -75,10 +124,7 @@ import Vue from 'vue'
 export default {
     created () {
         if(JSON.stringify(localStorage.loginInfo) == undefined){
-            this.$message({
-                message: "请登录",
-                type: 'warning'
-            });
+            this.$message.warning("请登录");
             this.$router.push({path:'/login'});
             return;
         }
@@ -86,10 +132,12 @@ export default {
         
     },
     mounted() {
-        //tabScroll(0)
-        // $(window).resize(function () {
-        //     tabScroll(0)
-        // });
+        ztTabScroll(0)
+        tabScroll(1)
+        $(window).resize(function () {
+            ztTabScroll(0)
+            tabScroll(1)
+        });
     },
     data() {
        return {
@@ -111,17 +159,22 @@ export default {
            
            //视频侧边图片
            video_list:[
-                {id:'1',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000105',state:false},
-                {id:'2',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000106',state:false},
-                {id:'3',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000107',state:false},
-                {id:'4',img:'video.png',setting:'192.168.10.64,80,admin,admin@1234',type:'video',devid:'700000108',state:false},
+                {
+                    id:'1',name:'',img:'video.png',setting:'admin@1234',type:'video',devid:'700000105',state:false,
+                    json:{name:'',img:'video.png',width:60,height:60,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:''}
+                },
+                {
+                    id:'2',name:'',img:'video.png',setting:'admin@1234',type:'video',devid:'700000106',state:false,
+                    json:{name:'',img:'video.png',width:60,height:60,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:''}
+                },
+                
            ],
            //门禁侧边图片
           access_list:[
-                {id:'5',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000105',state:false},
-                {id:'6',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000106',state:false},
-                {id:'7',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000107',state:false},
-                {id:'8',img:'access.png',setting:'192.168.10.64,80,admin,admin@1234',type:'access',devid:'700000108',state:false},
+                {id:'5',img:'access.png',setting:'admin@1234',type:'access',devid:'700000105',state:false},
+                {id:'6',img:'access.png',setting:'admin@1234',type:'access',devid:'700000106',state:false},
+                {id:'7',img:'access.png',setting:'admin@1234',type:'access',devid:'700000107',state:false},
+                {id:'8',img:'access.png',setting:'admin@1234',type:'access',devid:'700000108',state:false},
                 
            ],
            //图片展示
@@ -133,6 +186,28 @@ export default {
                 width:"500px",
            },
            
+           //查看设备详情
+           //设备点位
+           tipall:[
+               {name:'点位一',id:1},
+               {name:'点位二',id:2},
+               {name:'点位三',id:3},
+           ],
+           form: {
+                title: '',
+                width:'',
+                height:'',
+                hisalarm:true,
+                tipall:'',
+                color1:'',
+                color2:'',
+                color3:'',
+                color4:'',
+                background:[{name: '', url:'static/zutai/images/video.png'}]
+            },
+            device_show:true,  //是否可以显示侧边详情
+
+
 
        }
    },
@@ -187,19 +262,13 @@ export default {
         },
         //拖拽
         drag:function(ev){
-            //console.log(ev)
-            //console.log(this)
             this.img_ev=ev;
-            //this.img_html=this;
             ev.dataTransfer.setData("id",ev.target.id);  //只能为id，其它属性不行
         },
         allowDrop:function (ev) {
             ev.preventDefault();
         },
         drop:function(ev){
-            //console.log(ev)
-            console.log(this.img_html)
-            
             ev.preventDefault();
             var data = ev.dataTransfer.getData("id");
             if(data){  //第一次拖进来的时候赋了id的
@@ -217,10 +286,11 @@ export default {
                             }else{
                                 this.video_list[i].state=true;
                                 list_item=this.video_list[i];
+                                list_item.index=i;
                             }
                         }
                     }
-                }else if(type=="access"){
+                }else if(type=="access"){ //门禁
                     for(var i=0;i<this.access_list.length;i++){
                         if(this.access_list[i].devid==devid){
                             if(this.access_list[i].state==true){
@@ -229,6 +299,7 @@ export default {
                             }else{
                                 this.access_list[i].state=true;
                                 list_item=this.access_list[i];
+                                list_item.index=i;
                             }
                         }
                     }
@@ -239,11 +310,6 @@ export default {
                 list_item.pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
             }else{ //在地图上拖拽
                 console.log(this.img_html);
-                // this.img_html.pic_offset=this.pic_offset;
-                // this.img_html.pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
-                //this.img_html.address()
-                console.log(ev.offsetX)
-                console.log(this.img_ev.offsetX)
                 var left,top; //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
                 if(ev.offsetX-this.img_ev.offsetX<0){
                     left=0;
@@ -269,19 +335,60 @@ export default {
                 this.img_html.save_location.y=top;
             }
             
-            // console.log(ev);
-            // console.log(this.img_html);
-            // console.log($(this.img_html.$el).width());
-            // console.log(ev.offsetX);
-            // var clientWidth=ev.target.clientWidth;
-            // var clientHeight=ev.target.clientHeight;
-
-            // var loc=getLoc(ev,this.img_html.$el);
-            // this.img_html.$el.style.left=loc.x+"%";
-            // this.img_html.$el.style.top=loc.y+"%";
            
         },
+        //查看设备详情
+        showDetail:function(ev){
+            ev.stopPropagation();
+            console.log(this.img_html)
+            this.form.title=this.img_html.dialogInfo.name;
+            this.form.width=this.img_html.$el.offsetWidth;
+            this.form.height=this.img_html.$el.offsetHeight;
+            this.form.color1=this.img_html.dialogInfo.color1;
+            this.form.color2=this.img_html.dialogInfo.color2;
+            this.form.color3=this.img_html.dialogInfo.color3;
+            this.form.color4=this.img_html.dialogInfo.color4;
+            this.form.hisalarm=this.img_html.dialogInfo.hisalarm;
+            if(this.device_show){
+                $(this.$refs.deviceShowDetail).css("right","0");
+                this.device_show=false;
+            }
+        },
+        //隐藏设备详情
+        hideDevice:function(){
+            if(!this.device_show){
+                $(this.$refs.deviceShowDetail).css("right","-250px");
+                this.device_show=true;
+            }
+        },
+        //阻止事件
+        preventClick:function(ev){
+            ev.stopPropagation();
+        },
+        handleRemove:function(){
 
+        },
+        handlesuccess:function(){
+
+        },
+        //确认修改
+        onSubmit:function(){
+            this.$confirm('确认提交修改?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    this.img_html.dialogInfo.name=this.form.title;
+                    this.img_html.$el.offsetWidth=this.form.width;
+                    this.img_html.$el.offsetHeight=this.form.height;
+                    this.img_html.dialogInfo.color1=this.form.color1;
+                    this.img_html.dialogInfo.color2=this.form.color2;
+                    this.img_html.dialogInfo.color3=this.form.color3;
+                    this.img_html.dialogInfo.color4=this.form.color4;
+                    this.img_html.dialogInfo.hisalarm=this.form.hisalarm;
+                }).catch(() => {
+            });
+        }
 
     },
     components:{DialogZtUploadImg,ZtDevice}

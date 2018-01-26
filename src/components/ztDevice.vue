@@ -6,7 +6,7 @@
         :id='"lon_"+dialogInfo.type+dialogInfo.devid' 
         :src="'static/zutai/images/'+dialogInfo.img" 
         :ref='"lon_"+dialogInfo.type+dialogInfo.devid'
-        draggable="true" @dragstart="drag($event)" class="loncom_canvas_samllimg">
+        draggable="true" @dragstart="drag($event)" @click="showDetail($event)" class="loncom_canvas_samllimg">
 </template>
 
 
@@ -48,8 +48,7 @@ export default {
     methods:{
        //拖拽
         drag:function(ev){
-            console.log(this)
-            console.log(ev);
+            console.log(12)
             this.$parent.img_ev=ev;
             this.$parent.img_html=this;
         },
@@ -95,7 +94,12 @@ export default {
                 "height":loc.height.toFixed(2)
             });
 
-        }
+        },
+        //点击查询设备详情
+        showDetail:function(event){
+            this.$parent.img_html=this;
+            this.$emit('showDetail',event); 
+        },
            
     },
     props:["dialogInfo"],
