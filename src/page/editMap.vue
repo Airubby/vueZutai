@@ -161,11 +161,19 @@ export default {
            video_list:[
                 {
                     id:'1',name:'',img:'video.png',setting:'admin@1234',type:'video',devid:'700000105',state:false,
-                    json:{name:'',img:'video.png',width:60,height:60,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:''}
+                    json:{
+                        name:'',img:'video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        pic_size:{width:60,height:60},
+                        pic_offset:{offsetX:'',offsetY:''}
+                    }
                 },
                 {
                     id:'2',name:'',img:'video.png',setting:'admin@1234',type:'video',devid:'700000106',state:false,
-                    json:{name:'',img:'video.png',width:60,height:60,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:''}
+                     json:{
+                        name:'',img:'video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        pic_size:{width:60,height:60},
+                        pic_offset:{offsetX:'',offsetY:''}
+                    }
                 },
                 
            ],
@@ -304,35 +312,41 @@ export default {
                         }
                     }
                 }
-                //拖拽的设备点击的那个点相对于设备自己的偏移
-                list_item.pic_offset={left:this.img_ev.offsetX,top:this.img_ev.offsetY};  
-                //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻
-                list_item.pic_tocanvas_offset={left:ev.offsetX,top:ev.offsetY};
-            }else{ //在地图上拖拽
-                console.log(this.img_html);
-                var left,top; //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
+                //拖拽的设备点击的那个点相对于设备自己的偏移this.img_ev.offsetX,this.img_ev.offsetY
+                //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻ev.offsetX,ev.offsetY
                 if(ev.offsetX-this.img_ev.offsetX<0){
-                    left=0;
-                }else if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
-                    left=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
+                   list_item.json.pic_offset.offsetx=0;
+                }else if(ev.offsetX+(list_item.width-this.img_ev.offsetX)>$("#canvas").width()){
+                   list_item.json.pic_offset.offsetX=$("#canvas").width()-list_item.width;
                 }else{
-                    left=ev.offsetX-this.img_ev.offsetX
+                   list_item.json.pic_offset.offsetX=ev.offsetX-this.img_ev.offsetX
                 }
                 if(ev.offsetY-this.img_ev.offsetY<0){
-                    top=0;
-                }else if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()){
-                    top=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
+                   list_item.json.pic_offset.offsetY=0;
+                }else if(ev.offsetY+(list_item.height-this.img_ev.offsetY)>$("#canvas").height()){
+                   list_item.json.pic_offset.offsetY=$("#canvas").height()-list_item.json.pic_offset.height;
                 }else{
-                    top=ev.offsetY-this.img_ev.offsetY
+                   list_item.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
-                $(this.img_html.$el).css({
-                    "left":left+"px",
-                    "top":top+"px",
-                    "width":this.img_html.$el.offsetWidth+"px",
-                    "height":this.img_html.$el.offsetHeight+"px",
-                });
-                this.img_html.save_location.x=left;
-                this.img_html.save_location.y=top;
+
+            }else{ //在地图上拖拽
+                console.log(this.img_html);
+                //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
+                if(ev.offsetX-this.img_ev.offsetX<0){
+                    this.img_html.dialogInfo.json.pic_offset.offsetX=0;
+                }else if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
+                    this.img_html.dialogInfo.json.pic_offset.offsetX=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
+                }else{
+                    this.img_html.dialogInfo.json.pic_offset.offsetX=ev.offsetX-this.img_ev.offsetX
+                }
+                if(ev.offsetY-this.img_ev.offsetY<0){
+                    this.img_html.dialogInfo.json.pic_offset.offsetY=0;
+                }else if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()){
+                    this.img_html.dialogInfo.json.pic_offset.offsetY=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
+                }else{
+                    this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
+                }
+               
             }
             
            
@@ -342,13 +356,13 @@ export default {
             ev.stopPropagation();
             console.log(this.img_html)
             this.form.title=this.img_html.dialogInfo.name;
-            this.form.width=this.img_html.$el.offsetWidth;
-            this.form.height=this.img_html.$el.offsetHeight;
-            this.form.color1=this.img_html.dialogInfo.color1;
-            this.form.color2=this.img_html.dialogInfo.color2;
-            this.form.color3=this.img_html.dialogInfo.color3;
-            this.form.color4=this.img_html.dialogInfo.color4;
-            this.form.hisalarm=this.img_html.dialogInfo.hisalarm;
+            this.form.width=this.img_html.dialogInfo.json.pic_size.width;
+            this.form.height=this.img_html.dialogInfo.json.pic_size.height;
+            this.form.color1=this.img_html.dialogInfo.json.color1;
+            this.form.color2=this.img_html.dialogInfo.json.color2;
+            this.form.color3=this.img_html.dialogInfo.json.color3;
+            this.form.color4=this.img_html.dialogInfo.json.color4;
+            this.form.hisalarm=this.img_html.dialogInfo.json.hisalarm;
             if(this.device_show){
                 $(this.$refs.deviceShowDetail).css("right","0");
                 this.device_show=false;
@@ -378,14 +392,16 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    this.img_html.dialogInfo.name=this.form.title;
-                    this.img_html.$el.offsetWidth=this.form.width;
-                    this.img_html.$el.offsetHeight=this.form.height;
-                    this.img_html.dialogInfo.color1=this.form.color1;
-                    this.img_html.dialogInfo.color2=this.form.color2;
-                    this.img_html.dialogInfo.color3=this.form.color3;
-                    this.img_html.dialogInfo.color4=this.form.color4;
-                    this.img_html.dialogInfo.hisalarm=this.form.hisalarm;
+                    this.img_html.dialogInfo.json.name=this.form.title;
+                    this.img_html.dialogInfo.json.pic_size.width=this.form.width;
+                    this.img_html.dialogInfo.json.pic_size.height=this.form.height;
+                    this.img_html.dialogInfo.json.color1=this.form.color1;
+                    this.img_html.dialogInfo.json.color2=this.form.color2;
+                    this.img_html.dialogInfo.json.color3=this.form.color3;
+                    this.img_html.dialogInfo.json.color4=this.form.color4;
+                    this.img_html.dialogInfo.json.hisalarm=this.form.hisalarm;
+                    $(this.$refs.deviceShowDetail).css("right","-250px");
+                    this.device_show=false;
                 }).catch(() => {
             });
         }
