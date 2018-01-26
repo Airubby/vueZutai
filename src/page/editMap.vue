@@ -1,5 +1,5 @@
 <template>
-    <div class="loncom_content" ref="loncom_zt_content" @click="hideDevice">
+    <div class="loncom_content" ref="loncom_zt_content">
         <div class="loncom_sidebar loncom_zt_sidebar" ref="sidebar">
             <el-tabs v-model="activeName">
                 <el-tab-pane label="设备素材" name="first" class="el-tab-pane0">
@@ -8,14 +8,14 @@
                             <el-collapse-item title="视频" name="first">
                                 <div class="loncom_zt_sidebarcon loncom_zt_item">
                                     <span v-for="item in video_list">
-                                        <img :data-setting='item.setting' :data-type="item.type" :data-devid="item.devid" :id='item.id' :src="'static/zutai/images/'+item.img" draggable="true" @dragstart="drag($event)">
+                                        <img :data-setting='item.setting' :data-type="item.type" :data-devid="item.devid" :id='item.id' :src="item.img" draggable="true" @dragstart="drag($event)">
                                     </span>
                                 </div>
                             </el-collapse-item>
                             <el-collapse-item title="门禁" name="second">
                                 <div class="loncom_zt_sidebarcon loncom_zt_item">
                                    <span v-for="item in access_list">
-                                        <img :data-setting='item.setting' :data-type="item.type" :data-devid="item.devid" :id='item.id' :src="'static/zutai/images/'+item.img" draggable="true" @dragstart="drag($event)">
+                                        <img :data-setting='item.setting' :data-type="item.type" :data-devid="item.devid" :id='item.id' :src="item.img" draggable="true" @dragstart="drag($event)">
                                     </span>
                                 </div>
                             </el-collapse-item>
@@ -40,7 +40,7 @@
                         <span><i class="fa fa-mail-forward"></i></span>
                     </el-tooltip>
                     <el-tooltip class="item" content="删除设备" placement="top-end">
-                        <span><i class="fa fa-remove"></i></span>
+                        <span @click="removeDevice"><i class="fa fa-remove"></i></span>
                     </el-tooltip>
                     <el-tooltip class="item" content="保存操作" placement="top-end">
                         <span><i class="fa fa-save"></i></span>
@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
-            <div id="canvas" ref="canvas" class="loncom_zt_canvas"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
+            <div id="canvas" ref="canvas" @click="hideDevice" class="loncom_zt_canvas"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
                 <!--拖拽的设备详情-->
                 <div class="device_detail" ref="deviceShowDetail" @click="preventClick($event)">
                     <div class="device_detail_title">
@@ -67,7 +67,7 @@
                                 <el-upload
                                         action=""
                                         :on-remove="handleRemove"
-                                        :file-list="form.background"
+                                        :file-list="form.img"
                                         :on-success="handlesuccess"
                                         :limit="1"
                                         list-type="picture">
@@ -138,6 +138,12 @@ export default {
             ztTabScroll(0)
             tabScroll(1)
         });
+        var _this=this;
+        document.onkeyup=function(ev){
+            if(ev.keyCode == 46){
+                _this.removeDevice();
+            }
+        }
     },
     data() {
        return {
@@ -160,17 +166,17 @@ export default {
            //视频侧边图片
            video_list:[
                 {
-                    id:'1',name:'',img:'video.png',setting:'admin@1234',type:'video',devid:'700000105',state:false,
+                    id:'1',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000105',state:false,
                     json:{
-                        name:'',img:'video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
                         pic_size:{width:60,height:60},
                         pic_offset:{offsetX:'',offsetY:''}
                     }
                 },
                 {
-                    id:'2',name:'',img:'video.png',setting:'admin@1234',type:'video',devid:'700000106',state:false,
+                    id:'2',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000106',state:false,
                      json:{
-                        name:'',img:'video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
                         pic_size:{width:60,height:60},
                         pic_offset:{offsetX:'',offsetY:''}
                     }
@@ -179,10 +185,22 @@ export default {
            ],
            //门禁侧边图片
           access_list:[
-                {id:'5',img:'access.png',setting:'admin@1234',type:'access',devid:'700000105',state:false},
-                {id:'6',img:'access.png',setting:'admin@1234',type:'access',devid:'700000106',state:false},
-                {id:'7',img:'access.png',setting:'admin@1234',type:'access',devid:'700000107',state:false},
-                {id:'8',img:'access.png',setting:'admin@1234',type:'access',devid:'700000108',state:false},
+                 {
+                    id:'3',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'video',devid:'700000107',state:false,
+                    json:{
+                        name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        pic_size:{width:60,height:60},
+                        pic_offset:{offsetX:'',offsetY:''}
+                    }
+                },
+                {
+                    id:'4',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'video',devid:'700000108',state:false,
+                     json:{
+                        name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        pic_size:{width:60,height:60},
+                        pic_offset:{offsetX:'',offsetY:''}
+                    }
+                },
                 
            ],
            //图片展示
@@ -211,7 +229,7 @@ export default {
                 color2:'',
                 color3:'',
                 color4:'',
-                background:[{name: '', url:'static/zutai/images/video.png'}]
+                img:[{name: '', url:''}]
             },
             device_show:true,  //是否可以显示侧边详情
 
@@ -363,6 +381,7 @@ export default {
             this.form.color3=this.img_html.dialogInfo.json.color3;
             this.form.color4=this.img_html.dialogInfo.json.color4;
             this.form.hisalarm=this.img_html.dialogInfo.json.hisalarm;
+            this.form.img[0].url=this.img_html.dialogInfo.json.img;
             if(this.device_show){
                 $(this.$refs.deviceShowDetail).css("right","0");
                 this.device_show=false;
@@ -401,9 +420,39 @@ export default {
                     this.img_html.dialogInfo.json.color4=this.form.color4;
                     this.img_html.dialogInfo.json.hisalarm=this.form.hisalarm;
                     $(this.$refs.deviceShowDetail).css("right","-250px");
-                    this.device_show=false;
-                }).catch(() => {
-            });
+                    this.device_show=true;
+                });
+        },
+        //删除设备
+        removeDevice:function(){
+            console.log(this.img_html)
+            if(this.img_html==""){
+                this.$message.warning("请选择要删除的设备!");
+                return;
+            }
+            this.$confirm('确认删除此设备?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    
+                    switch (this.img_html.dialogInfo.type){
+                        case "video"://视频
+                            this.video_list[this.img_html.dialogInfo.index].state=false;
+                            this.video_list[this.img_html.dialogInfo.index].json={
+                                name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                                pic_size:{width:60,height:60},
+                                pic_offset:{offsetX:'',offsetY:''}
+                            }
+                            
+                        case "access"://门禁
+
+                    }
+                    $(this.$refs.deviceShowDetail).css("right","-250px");
+                    this.device_show=true;
+
+                });
+            
         }
 
     },
