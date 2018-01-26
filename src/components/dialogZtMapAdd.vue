@@ -85,12 +85,21 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if(valid){ //验证通过
                     this.dialogInfo.visible=false;   
-                    console.log(this.dialogInfo)
                     if(this.dialogInfo.type=="edit"){
                         this.$parent.map_list.splice(this.dialogInfo.index,1,this.map_list);
+                        var mapInfo=JSON.parse(localStorage.mapInfo);
+                        mapInfo.map_list[this.dialogInfo.index].name=this.map_list.name;
+                        mapInfo.map_list[this.dialogInfo.index].addr=this.map_list.addr;
+                        mapInfo.map_list[this.dialogInfo.index].descriotion=this.map_list.descriotion;
+                        localStorage.mapInfo = JSON.stringify(mapInfo);
                     }else{
-                        console.log(123)
                         this.$parent.map_list.push(this.map_list);
+                        var list=this.map_list;
+                        list.img='';
+                        list.jsonArr=[];
+                        var mapInfo=JSON.parse(localStorage.mapInfo);
+                        mapInfo.map_list.push(list);
+                        localStorage.mapInfo = JSON.stringify(mapInfo);
                     }
                     this.map_list={};
                     this.dialogInfo.data={};

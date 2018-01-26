@@ -10,7 +10,7 @@
                         <div class="loncom_zt_sidebarbox" v-for="(item,index) in map_list">
                             <div class="loncom_zt_maptitle">{{item.name}}</div>
                             <div class="loncom_zt_mapimg">
-                                <img :src="'static/zutai/images/img.png'">
+                                <img :src="item.img">
                             </div>
                             <div class="loncom_zt_map_btn">
                                 <span @click="editItem(item,index)"><i class="fa fa-edit"></i></span>
@@ -51,6 +51,33 @@ export default {
             this.$router.push({path:'/login'});
             return;
         }
+        //设备信息初始化
+        if (!localStorage.deviceInfo) {
+            var deviceInfo={};
+            deviceInfo.video=[
+                {id:'1',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000105'},
+                {id:'2',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000106'},
+                {id:'3',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000107'},
+                {id:'4',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000108'},
+            ];
+            deviceInfo.access=[
+                {id:'1',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000105'},
+                {id:'2',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000106'},
+                {id:'3',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000107'},
+                {id:'4',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000108'},
+            ];
+            localStorage.deviceInfo = JSON.stringify(deviceInfo);
+        }
+        //电子地图初始化
+        if(!localStorage.mapInfo){
+            var mapInfo={};
+            mapInfo.map_list=[];
+            localStorage.mapInfo = JSON.stringify(mapInfo);
+        }else{
+            this.map_list=JSON.parse(localStorage.mapInfo).map_list;
+        }
+
+
     },
     mounted() {
         tabScroll(0)
@@ -114,7 +141,7 @@ export default {
         },
         //编辑电子地图
         editMap:function(item,index){
-            this.$router.push({path:'/editMap',query:{item:item}});
+            this.$router.push({path:'/editMap',query:{index:index}});
         },
         //删除电子地图
         removeMap:function(item,index){
@@ -124,6 +151,9 @@ export default {
                 type: 'warning'
             }).then(() => {
                 this.map_list.splice(index,1);
+                var mapInfo=JSON.parse(localStorage.mapInfo);
+                mapInfo.map_list.splice(index,1);
+                localStorage.mapInfo = JSON.stringify(mapInfo);
 	       });
             
         },

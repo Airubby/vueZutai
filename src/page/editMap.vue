@@ -43,7 +43,7 @@
                         <span @click="removeDevice"><i class="fa fa-remove"></i></span>
                     </el-tooltip>
                     <el-tooltip class="item" content="保存操作" placement="top-end">
-                        <span><i class="fa fa-save"></i></span>
+                        <span @click="saveDevice"><i class="fa fa-save"></i></span>
                     </el-tooltip>
                     <el-tooltip class="item" content="上传机房图" placement="top-end">
                         <span @click="uploadImg"><i class="fa fa-cloud-upload"></i></span>
@@ -129,6 +129,27 @@ export default {
             return;
         }
         var obj = this.$route.query;
+        console.log(obj);
+
+        if(localStorage.deviceInfo){
+            var deviceInfo=JSON.parse(localStorage.deviceInfo);
+            this.video_list=deviceInfo.video;
+            this.access_list=deviceInfo.access;
+            for(var i=0;i<deviceInfo.video.length;i++){
+                this.video_list[i].json={
+                    name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                    pic_size:{width:60,height:60},
+                    pic_offset:{offsetX:'',offsetY:''}
+                }
+            }
+            for(var i=0;i<deviceInfo.access.length;i++){
+                this.access_list[i].json={
+                    name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                    pic_size:{width:60,height:60},
+                    pic_offset:{offsetX:'',offsetY:''}
+                }
+            }
+        }
         
     },
     mounted() {
@@ -157,52 +178,21 @@ export default {
            img_html:'',
            //开始拉取的设备的offset获取,点击设备时点击的那个点相对于自己的偏移量
            img_ev:'',
-           //存储图片的width，height，缩放不更改这个值，新拉进来的设备就按这个值设置长宽
-           img_info:{
-               width:60,
-               height:60
-           },
+           
            
            //视频侧边图片
            video_list:[
-                {
-                    id:'1',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000105',state:false,
-                    json:{
-                        name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                        pic_size:{width:60,height:60},
-                        pic_offset:{offsetX:'',offsetY:''}
-                    }
-                },
-                {
-                    id:'2',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000106',state:false,
-                     json:{
-                        name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                        pic_size:{width:60,height:60},
-                        pic_offset:{offsetX:'',offsetY:''}
-                    }
-                },
-                
+                // {
+                //     id:'1',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000105',state:false,
+                //     json:{
+                //         name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                //         pic_size:{width:60,height:60},
+                //         pic_offset:{offsetX:'',offsetY:''}
+                //     }
+                // },
            ],
            //门禁侧边图片
-          access_list:[
-                 {
-                    id:'3',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'video',devid:'700000107',state:false,
-                    json:{
-                        name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                        pic_size:{width:60,height:60},
-                        pic_offset:{offsetX:'',offsetY:''}
-                    }
-                },
-                {
-                    id:'4',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'video',devid:'700000108',state:false,
-                     json:{
-                        name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                        pic_size:{width:60,height:60},
-                        pic_offset:{offsetX:'',offsetY:''}
-                    }
-                },
-                
-           ],
+          access_list:[],
            //图片展示
            canvas_img:'',
            //上传图片
@@ -434,26 +424,31 @@ export default {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
-                }).then(() => {
-                    
-                    switch (this.img_html.dialogInfo.type){
-                        case "video"://视频
-                            this.video_list[this.img_html.dialogInfo.index].state=false;
-                            this.video_list[this.img_html.dialogInfo.index].json={
-                                name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                                pic_size:{width:60,height:60},
-                                pic_offset:{offsetX:'',offsetY:''}
-                            }
-                            
-                        case "access"://门禁
+            }).then(() => {
+                
+                switch (this.img_html.dialogInfo.type){
+                    case "video"://视频
+                        this.video_list[this.img_html.dialogInfo.index].state=false;
+                        this.video_list[this.img_html.dialogInfo.index].json={
+                            name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                            pic_size:{width:60,height:60},
+                            pic_offset:{offsetX:'',offsetY:''}
+                        }
+                        
+                    case "access"://门禁
 
-                    }
-                    $(this.$refs.deviceShowDetail).css("right","-250px");
-                    this.device_show=true;
+                }
+                $(this.$refs.deviceShowDetail).css("right","-250px");
+                this.device_show=true;
 
-                });
+            });
             
+        },
+        //保存操作
+        saveDevice:function(){
+
         }
+
 
     },
     components:{DialogZtUploadImg,ZtDevice}
