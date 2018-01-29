@@ -134,81 +134,59 @@ export default {
         var mapInfo=JSON.parse(localStorage.mapInfo);
         console.log(mapInfo)
         //初始化侧边设备
+        var _this=this;
+        function hasDeviceInfo(list){
+            for(var i=0;i<list.length;i++){
+                for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
+                    if(mapInfo.map_list[obj.index].jsonArr[j].type==list[i].type&&mapInfo.map_list[obj.index].jsonArr[j].devid==list[i].devid){
+                        Vue.set(list[i],'state',true);
+                        Vue.set(list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
+                        Vue.set(list[i],'index',i);
+                        _this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j]);
+                        break;
+                    }else{
+                        defaultInfo(list,i);
+                    }
+                }
+            }
+        }
+        function defaultInfo(list,i){
+            var imgUrl='';
+            switch(list[i].type){
+                case "video":
+                    imgUrl='static/zutai/images/video.png';
+                    break;
+                case "access":
+                    imgUrl='static/zutai/images/access.png';
+                    break;
+            }
+            Vue.set(list[i],'state',false);
+            Vue.set(list[i],'json',{
+                name:'',img:imgUrl,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                pic_size:{width:60,height:60},
+                pic_offset:{offsetX:'',offsetY:''},
+                canvas_info:{width:'',height:'',bg:''}
+            });
+        }
+        function noDeviceInfo(list){
+            for(var i=0;i<list.length;i++){
+                defaultInfo(list,i);
+            }
+        }
         if(localStorage.deviceInfo){
             var deviceInfo=JSON.parse(localStorage.deviceInfo);
             this.video_list=deviceInfo.video;
             this.access_list=deviceInfo.access;
-            console.log(this.video_list)
             if(mapInfo.map_list[obj.index].jsonArr.length>0){  //初始化时有设备
-                for(var i=0;i<deviceInfo.video.length;i++){
-                    for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
-                        if(mapInfo.map_list[obj.index].jsonArr[j].type==deviceInfo.video[i].type&&mapInfo.map_list[obj.index].jsonArr[j].devid==deviceInfo.video[i].devid){
-                            Vue.set(this.video_list[i],'state',true);
-                            Vue.set(this.video_list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
-                            Vue.set(this.video_list[i],'index',i);
-                            this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j]);
-                            break;
-                        }else{
-                            Vue.set(this.video_list[i],'state',false);
-                            Vue.set(this.video_list[i],'json',{
-                                name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                                pic_size:{width:60,height:60},
-                                pic_offset:{offsetX:'',offsetY:''}
-                            });
-
-                        }
-                    }
-                }
+                hasDeviceInfo(this.video_list);
+                hasDeviceInfo(this.access_list);
             }else{
-                for(var i=0;i<deviceInfo.video.length;i++){
-                    Vue.set(this.video_list[i],'state',false);
-                    Vue.set(this.video_list[i],'json',{
-                        name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                        pic_size:{width:60,height:60},
-                        pic_offset:{offsetX:'',offsetY:''}
-                    });
-                }
+                noDeviceInfo(this.video_list);
+                noDeviceInfo(this.access_list);
             }
             this.canvas_img=mapInfo.map_list[obj.index].img;
-            // for(var i=0;i<deviceInfo.video.length;i++){
-            //     if(mapInfo.map_list[obj.index].jsonArr.length>0){
-            //         for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
-            //             if(mapInfo.map_list[obj.index].jsonArr[j].type==deviceInfo.video[i].type&&mapInfo.map_list[obj.index].jsonArr[j].devid==deviceInfo.video[i].devid){
-            //                 Vue.set(this.video_list[i],'state',true);
-            //                 Vue.set(this.video_list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
-            //                 Vue.set(this.video_list[i],'index',i);
-            //                 this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j].json);
-            //                 console.log(this.device_arrinfo) 
-            //             }else{
-            //                 Vue.set(this.video_list[i],'state',false);
-            //                 Vue.set(this.video_list[i],'json',{
-            //                     name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-            //                     pic_size:{width:60,height:60},
-            //                     pic_offset:{offsetX:'',offsetY:''}
-            //                 });
-
-            //             }
-            //         }
-            //     }else{
-            //         Vue.set(this.video_list[i],'state',false);
-            //         Vue.set(this.video_list[i],'json',{
-            //             name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-            //             pic_size:{width:60,height:60},
-            //             pic_offset:{offsetX:'',offsetY:''}
-            //         });
-            //     }
-            // }
-            for(var i=0;i<deviceInfo.access.length;i++){
-                Vue.set(this.access_list[i],'state',false);
-                Vue.set(this.access_list[i],'json',{
-                    name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                    pic_size:{width:60,height:60},
-                    pic_offset:{offsetX:'',offsetY:''}
-                });
-            }
+          
         }
-        console.log(this.img_html)
-        console.log(this.video_list)
         
     },
     mounted() {
@@ -248,6 +226,10 @@ export default {
                 }
             }
         }
+        //canvas_info width，height，背景图片大小
+        this.canvas_info.width=$("#canvas").width();
+        this.canvas_info.height=$("#canvas").height();
+        this.canvas_info.bg=getBackgroundImageSize($("#canvas"));
     },
     data() {
        return {
@@ -308,6 +290,8 @@ export default {
             device_show:true,  //是否可以显示侧边详情
             //保存地图上的设备信息
             device_arrinfo:[],
+            //width，height，背景图片大小保存的时候要存入，因为跳转到index时要用到这个参数
+            canvas_info:{},
 
 
        }
@@ -359,7 +343,7 @@ export default {
         },
         //返回主页面
         backPage:function(){
-            this.$router.push({path:'/'});
+            this.$router.push({path:'/',query:{'index':this.mapIndex}});
         },
         //拖拽
         drag:function(ev){
@@ -544,6 +528,7 @@ export default {
             mapInfo.map_list[this.mapIndex].jsonArr=[];
             mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
             mapInfo.map_list[this.mapIndex].img=this.canvas_img;
+            mapInfo.map_list[this.mapIndex].canvas_info=this.canvas_info;
             localStorage.mapInfo = JSON.stringify(mapInfo);
             console.log(mapInfo);
             this.$message.success('保存成功');

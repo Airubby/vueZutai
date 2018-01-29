@@ -29,7 +29,7 @@
             
         </div>
         <div class="loncom_sidebar_right loncom_zt_sidebar_right" ref="content">
-            <div class="loncom_zt_canvas" :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
+            <div id="canvas" class="loncom_zt_canvas" :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
                 <span v-for="item in video_list" v-if="item.state"><ZtDeviceVideo v-bind:dialogInfo="item"></ZtDeviceVideo></span>
             </div>
         </div>
@@ -86,14 +86,17 @@ export default {
             this.map_list=JSON.parse(localStorage.mapInfo).map_list;
             console.log(this.map_list)
             if(this.map_list.length>0){
+                this.canvas_img=this.map_list[this.mapIndex].img;
+                this.canvas_info=this.map_list[this.mapIndex].canvas_info;
                 for(var i=0;i<this.map_list[this.mapIndex].jsonArr.length;i++){
                     switch(this.map_list[this.mapIndex].jsonArr[i].type){
                         case "video":
                             this.video_list.push(this.map_list[this.mapIndex].jsonArr[i]);
+                            break;
                         case "access":
                             this.access_list.push(this.map_list[this.mapIndex].jsonArr[i]);
+                            break;
                     }
-                    this.canvas_img=this.map_list[this.mapIndex].img;
                 }
             }
         }
@@ -126,6 +129,8 @@ export default {
             mapIndex:'',
             //canvas_img电子地图背景图片
             canvas_img:'',
+            //width，height，背景图片大小
+            canvas_info:{},
             //设备信息
             video_list:[],
             //门禁信息
