@@ -169,6 +169,7 @@ export default {
                     });
                 }
             }
+            this.canvas_img=mapInfo.map_list[obj.index].img;
             // for(var i=0;i<deviceInfo.video.length;i++){
             //     if(mapInfo.map_list[obj.index].jsonArr.length>0){
             //         for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
@@ -542,6 +543,7 @@ export default {
             console.log(mapInfo)
             mapInfo.map_list[this.mapIndex].jsonArr=[];
             mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
+            mapInfo.map_list[this.mapIndex].img=this.canvas_img;
             localStorage.mapInfo = JSON.stringify(mapInfo);
             console.log(mapInfo);
             this.$message.success('保存成功');

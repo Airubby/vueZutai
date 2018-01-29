@@ -29,7 +29,7 @@
             
         </div>
         <div class="loncom_sidebar_right loncom_zt_sidebar_right" ref="content">
-            <div class="loncom_zt_canvas">
+            <div class="loncom_zt_canvas" :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
                 <span v-for="item in video_list" v-if="item.state"><ZtDeviceVideo v-bind:dialogInfo="item"></ZtDeviceVideo></span>
             </div>
         </div>
@@ -93,6 +93,7 @@ export default {
                         case "access":
                             this.access_list.push(this.map_list[this.mapIndex].jsonArr[i]);
                     }
+                    this.canvas_img=this.map_list[this.mapIndex].img;
                 }
             }
         }
@@ -123,6 +124,8 @@ export default {
             },
             //mapIndex显示那个电子地图
             mapIndex:'',
+            //canvas_img电子地图背景图片
+            canvas_img:'',
             //设备信息
             video_list:[],
             //门禁信息
