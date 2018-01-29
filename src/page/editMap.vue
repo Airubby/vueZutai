@@ -129,27 +129,85 @@ export default {
             return;
         }
         var obj = this.$route.query;
+        this.mapIndex=obj.index;
         console.log(obj);
-
+        var mapInfo=JSON.parse(localStorage.mapInfo);
+        console.log(mapInfo)
+        //初始化侧边设备
         if(localStorage.deviceInfo){
             var deviceInfo=JSON.parse(localStorage.deviceInfo);
             this.video_list=deviceInfo.video;
             this.access_list=deviceInfo.access;
-            for(var i=0;i<deviceInfo.video.length;i++){
-                this.video_list[i].json={
-                    name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                    pic_size:{width:60,height:60},
-                    pic_offset:{offsetX:'',offsetY:''}
+            console.log(this.video_list)
+            if(mapInfo.map_list[obj.index].jsonArr.length>0){  //初始化时有设备
+                for(var i=0;i<deviceInfo.video.length;i++){
+                    for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
+                        if(mapInfo.map_list[obj.index].jsonArr[j].type==deviceInfo.video[i].type&&mapInfo.map_list[obj.index].jsonArr[j].devid==deviceInfo.video[i].devid){
+                            Vue.set(this.video_list[i],'state',true);
+                            Vue.set(this.video_list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
+                            Vue.set(this.video_list[i],'index',i);
+                            this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j]);
+                            break;
+                        }else{
+                            Vue.set(this.video_list[i],'state',false);
+                            Vue.set(this.video_list[i],'json',{
+                                name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                                pic_size:{width:60,height:60},
+                                pic_offset:{offsetX:'',offsetY:''}
+                            });
+
+                        }
+                    }
+                }
+            }else{
+                for(var i=0;i<deviceInfo.video.length;i++){
+                    Vue.set(this.video_list[i],'state',false);
+                    Vue.set(this.video_list[i],'json',{
+                        name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                        pic_size:{width:60,height:60},
+                        pic_offset:{offsetX:'',offsetY:''}
+                    });
                 }
             }
+            // for(var i=0;i<deviceInfo.video.length;i++){
+            //     if(mapInfo.map_list[obj.index].jsonArr.length>0){
+            //         for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
+            //             if(mapInfo.map_list[obj.index].jsonArr[j].type==deviceInfo.video[i].type&&mapInfo.map_list[obj.index].jsonArr[j].devid==deviceInfo.video[i].devid){
+            //                 Vue.set(this.video_list[i],'state',true);
+            //                 Vue.set(this.video_list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
+            //                 Vue.set(this.video_list[i],'index',i);
+            //                 this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j].json);
+            //                 console.log(this.device_arrinfo) 
+            //             }else{
+            //                 Vue.set(this.video_list[i],'state',false);
+            //                 Vue.set(this.video_list[i],'json',{
+            //                     name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+            //                     pic_size:{width:60,height:60},
+            //                     pic_offset:{offsetX:'',offsetY:''}
+            //                 });
+
+            //             }
+            //         }
+            //     }else{
+            //         Vue.set(this.video_list[i],'state',false);
+            //         Vue.set(this.video_list[i],'json',{
+            //             name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+            //             pic_size:{width:60,height:60},
+            //             pic_offset:{offsetX:'',offsetY:''}
+            //         });
+            //     }
+            // }
             for(var i=0;i<deviceInfo.access.length;i++){
-                this.access_list[i].json={
+                Vue.set(this.access_list[i],'state',false);
+                Vue.set(this.access_list[i],'json',{
                     name:'',img:'static/zutai/images/access.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
                     pic_size:{width:60,height:60},
                     pic_offset:{offsetX:'',offsetY:''}
-                }
+                });
             }
         }
+        console.log(this.img_html)
+        console.log(this.video_list)
         
     },
     mounted() {
@@ -160,9 +218,33 @@ export default {
             tabScroll(1)
         });
         var _this=this;
-        document.onkeyup=function(ev){
+        document.onkeyup=function(event){
+            var ev = event || window.event || arguments.callee.caller.arguments[0];
             if(ev.keyCode == 46){
                 _this.removeDevice();
+            }
+            if(ev){
+                switch(ev.keyCode){
+                    case 46 :// 点击删除
+                        _this.removeDevice();
+                        break;
+                    case 90:
+                        if(event.ctrlKey){
+                            
+                        }
+                        break;
+                    case 89:
+                        if(event.ctrlKey){
+                           
+                        }
+                        break;
+                    case 83:
+                        if(event.ctrlKey){
+                            _this.saveDevice();
+                        }
+                        break;
+
+                }
             }
         }
     },
@@ -178,7 +260,8 @@ export default {
            img_html:'',
            //开始拉取的设备的offset获取,点击设备时点击的那个点相对于自己的偏移量
            img_ev:'',
-           
+           //存储编辑的那个站点地图index   存本地库测试用到的
+           mapIndex:'',
            
            //视频侧边图片
            video_list:[
@@ -222,7 +305,8 @@ export default {
                 img:[{name: '', url:''}]
             },
             device_show:true,  //是否可以显示侧边详情
-
+            //保存地图上的设备信息
+            device_arrinfo:[],
 
 
        }
@@ -285,6 +369,7 @@ export default {
             ev.preventDefault();
         },
         drop:function(ev){
+            console.log(this.video_list)
             ev.preventDefault();
             var data = ev.dataTransfer.getData("id");
             if(data){  //第一次拖进来的时候赋了id的
@@ -336,6 +421,7 @@ export default {
                 }else{
                    list_item.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
+                this.device_arrinfo.push(list_item);
 
             }else{ //在地图上拖拽
                 console.log(this.img_html);
@@ -425,7 +511,6 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                
                 switch (this.img_html.dialogInfo.type){
                     case "video"://视频
                         this.video_list[this.img_html.dialogInfo.index].state=false;
@@ -438,6 +523,12 @@ export default {
                     case "access"://门禁
 
                 }
+                
+                for(var i=0;i<this.device_arrinfo.length;i++){
+                    if(this.device_arrinfo[i].type==this.img_html.dialogInfo.type&&this.device_arrinfo[i].devid==this.img_html.dialogInfo.devid){
+                        this.device_arrinfo.splice(i,1);
+                    }
+                }
                 $(this.$refs.deviceShowDetail).css("right","-250px");
                 this.device_show=true;
 
@@ -446,6 +537,14 @@ export default {
         },
         //保存操作
         saveDevice:function(){
+            console.log(this.device_arrinfo)
+            var mapInfo=JSON.parse(localStorage.mapInfo);
+            console.log(mapInfo)
+            mapInfo.map_list[this.mapIndex].jsonArr=[];
+            mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
+            localStorage.mapInfo = JSON.stringify(mapInfo);
+            console.log(mapInfo);
+            this.$message.success('保存成功');
 
         }
 

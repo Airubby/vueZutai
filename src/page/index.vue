@@ -30,7 +30,7 @@
         </div>
         <div class="loncom_sidebar_right loncom_zt_sidebar_right" ref="content">
             <div class="loncom_zt_canvas">
-
+                <span v-for="item in video_list" v-if="item.state"><ZtDeviceVideo v-bind:dialogInfo="item"></ZtDeviceVideo></span>
             </div>
         </div>
         <!--电子地图新增编辑-->
@@ -41,6 +41,8 @@
 
 <script>
 import DialogZtMapAdd from '../components/dialogZtMapAdd.vue'
+import ZtDeviceVideo from '../components/ZtDeviceVideo.vue'
+
 export default {
     created () {
         if(JSON.stringify(localStorage.loginInfo) == undefined){
@@ -50,6 +52,13 @@ export default {
             });
             this.$router.push({path:'/login'});
             return;
+        }
+        var obj = this.$route.query;
+        console.log(obj);
+        if(JSON.stringify(obj) == "{}"){
+            this.mapIndex=0;
+        }else{
+            this.mapIndex=obj.index;
         }
         //设备信息初始化
         if (!localStorage.deviceInfo) {
@@ -75,6 +84,17 @@ export default {
             localStorage.mapInfo = JSON.stringify(mapInfo);
         }else{
             this.map_list=JSON.parse(localStorage.mapInfo).map_list;
+            console.log(this.map_list)
+            if(this.map_list.length>0){
+                for(var i=0;i<this.map_list[this.mapIndex].jsonArr.length;i++){
+                    switch(this.map_list[this.mapIndex].jsonArr[i].type){
+                        case "video":
+                            this.video_list.push(this.map_list[this.mapIndex].jsonArr[i]);
+                        case "access":
+                            this.access_list.push(this.map_list[this.mapIndex].jsonArr[i]);
+                    }
+                }
+            }
         }
 
 
@@ -101,6 +121,12 @@ export default {
                 width:"500px",
                 data:{},
             },
+            //mapIndex显示那个电子地图
+            mapIndex:'',
+            //设备信息
+            video_list:[],
+            //门禁信息
+            access_list:[],
 
        }
    },
@@ -159,7 +185,7 @@ export default {
         },
 
     },
-    components:{DialogZtMapAdd}
+    components:{DialogZtMapAdd,ZtDeviceVideo}
 }
 </script>
 
