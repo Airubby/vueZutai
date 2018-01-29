@@ -1,4 +1,10 @@
 <template>
+    <div :style='{
+            width:dialogInfo.json.pic_size.width+"px",
+            height:dialogInfo.json.pic_size.height+"px",
+            left:dialogInfo.json.pic_offset.offsetX+"px",
+            top:dialogInfo.json.pic_offset.offsetY+"px"}'
+        class="loncom_canvas_smallimg">
         <img 
         :data-setting='dialogInfo.setting' 
         :data-type="dialogInfo.type" 
@@ -7,13 +13,8 @@
         :src="dialogInfo.json.img||dialogInfo.img" 
         :ref='"lon_"+dialogInfo.type+dialogInfo.devid'
         draggable="true" @dragstart="drag($event)" @click="showDetail($event)"
-        :style='{
-            width:dialogInfo.json.pic_size.width+"px",
-            height:dialogInfo.json.pic_size.height+"px",
-            left:dialogInfo.json.pic_offset.offsetX+"px",
-            top:dialogInfo.json.pic_offset.offsetY+"px"}'
-        class="loncom_canvas_samllimg">
-
+        >
+    </div>
 </template>
 
 
@@ -61,12 +62,11 @@ export default {
             }
             var loc = nowLocation(this.save_back, this.dialogInfo.json.pic_offset,this.save_pic,now_back,this.dialogInfo.json.pic_size);
          
-            console.log(loc)
             $(this.$el).css({
                 "left":loc.x.toFixed(2)+"px",
                 "top":loc.y.toFixed(2)+"px",
-                "width":loc.width.toFixed(2),
-                "height":loc.height.toFixed(2)
+                "width":loc.width.toFixed(2)+"px",
+                "height":loc.height.toFixed(2)+"px"
             });
 
         },

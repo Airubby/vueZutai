@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
-            <div id="canvas" ref="canvas" @click="hideDevice" class="loncom_zt_canvas"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
+            <div id="canvas" ref="canvas" @click="hideDevice" class="loncom_zt_canvas loncom_zt_canvasedit"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
                 <!--拖拽的设备详情-->
                 <div class="device_detail" ref="deviceShowDetail" @click="preventClick($event)">
                     <div class="device_detail_title">
@@ -348,47 +348,27 @@ export default {
         //拖拽
         drag:function(ev){
             this.img_ev=ev;
-            ev.dataTransfer.setData("id",ev.target.id);  //只能为id，其它属性不行
+            ev.dataTransfer.setData("id","lon_"+ev.target.dataset.type+ev.target.dataset.devid);
+            ev.dataTransfer.setData("type",ev.target.dataset.type);
+            ev.dataTransfer.setData("devid",ev.target.dataset.devid);
         },
         allowDrop:function (ev) {
             ev.preventDefault();
         },
         drop:function(ev){
-            console.log(this.video_list)
             ev.preventDefault();
-            var data = ev.dataTransfer.getData("id");
-            if(data){  //第一次拖进来的时候赋了id的
-                var setting= $("#"+data).data("setting")//获取setting参数
-                var type= $("#"+data).data("type");//获取组件类型
-                var devid= $("#"+data).data("devid");//获取组件设备ID
-                var id="lon_"+type+devid;
+            var id = ev.dataTransfer.getData("id");
+            var type=ev.dataTransfer.getData("type");
+            var devid=ev.dataTransfer.getData("devid");
+            if(id){  //第一次拖进来的时候赋了id的
                 var list_item;
-                if(type=="video"){  //视频
-                    for(var i=0;i<this.video_list.length;i++){
-                        if(this.video_list[i].devid==devid){
-                            if(this.video_list[i].state==true){
-                                this.$message.error('设备已存在！');
-                                return;
-                            }else{
-                                this.video_list[i].state=true;
-                                list_item=this.video_list[i];
-                                list_item.index=i;
-                            }
-                        }
-                    }
-                }else if(type=="access"){ //门禁
-                    for(var i=0;i<this.access_list.length;i++){
-                        if(this.access_list[i].devid==devid){
-                            if(this.access_list[i].state==true){
-                                this.$message.error('设备已存在！');
-                                return;
-                            }else{
-                                this.access_list[i].state=true;
-                                list_item=this.access_list[i];
-                                list_item.index=i;
-                            }
-                        }
-                    }
+                switch(type){
+                    case "video":
+                        list_item=this.judge(this.video_list,devid);
+                        break;
+                    case "access":
+                        list_item=this.judge(this.access_list,devid);
+                        break;
                 }
                 //拖拽的设备点击的那个点相对于设备自己的偏移this.img_ev.offsetX,this.img_ev.offsetY
                 //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻ev.offsetX,ev.offsetY
@@ -498,17 +478,13 @@ export default {
             }).then(() => {
                 switch (this.img_html.dialogInfo.type){
                     case "video"://视频
-                        this.video_list[this.img_html.dialogInfo.index].state=false;
-                        this.video_list[this.img_html.dialogInfo.index].json={
-                            name:'',img:'static/zutai/images/video.png',tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                            pic_size:{width:60,height:60},
-                            pic_offset:{offsetX:'',offsetY:''}
-                        }
-                        
+                        this.deleteDevice(this.video_list,this.img_html.dialogInfo.index,'static/zutai/images/video.png');
+                        break;
                     case "access"://门禁
+                        this.deleteDevice(this.access_list,this.img_html.dialogInfo.index,'static/zutai/images/access.png');
+                        break;
 
                 }
-                
                 for(var i=0;i<this.device_arrinfo.length;i++){
                     if(this.device_arrinfo[i].type==this.img_html.dialogInfo.type&&this.device_arrinfo[i].devid==this.img_html.dialogInfo.devid){
                         this.device_arrinfo.splice(i,1);
@@ -533,7 +509,33 @@ export default {
             console.log(mapInfo);
             this.$message.success('保存成功');
 
-        }
+        },
+        //第一次拖进来的时候判断是否已经存在此设备
+        judge:function(list,devid){
+            var list_item;
+            for(var i=0;i<list.length;i++){
+                if(list[i].devid==devid){
+                    if(list[i].state==true){
+                        this.$message.error('设备已存在！');
+                        return;
+                    }else{
+                        list[i].state=true;
+                        list_item=list[i];
+                        list_item.index=i;
+                        return list_item;
+                    }
+                }
+            }
+        },
+        //删除设备的函数
+        deleteDevice:function(list,index,imgUrl){
+            list[index].state=false;
+            list[index].json={
+                name:'',img:imgUrl,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                pic_size:{width:60,height:60},
+                pic_offset:{offsetX:'',offsetY:''}
+            }
+        },
 
 
     },

@@ -15,17 +15,14 @@
         @click="showDetail($event)"
         >
 
-        <!--视频详情-->
-        <DialogZtVideo v-bind:dialogInfo="videoInfo"></DialogZtVideo>
-
-
+        
 
     </div>
 </template>
 
 
 <script>
-import DialogZtVideo from '../components/dialogZtVideo.vue'
+
 export default {
     created () {
         
@@ -54,7 +51,7 @@ export default {
             save_pic:'',
             //video弹窗
             videoInfo:{
-                title:'视频详情',
+                title:'门禁详情',
                 visible:false,
                 width:"800px",
                 data:{},
@@ -88,7 +85,7 @@ export default {
            
     },
     props:["dialogInfo"],
-    components:{DialogZtVideo}
+    components:{}
 }
 </script>
 

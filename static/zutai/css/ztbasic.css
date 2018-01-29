@@ -199,6 +199,9 @@
     position: relative;
 }
 .loncom_zt_canvas span img{
+    cursor: pointer;
+}
+.loncom_zt_canvasedit span img{
     cursor: move;
 }
 .loncom_canvas_bigimg{
@@ -208,10 +211,13 @@
     width: 100%;
     height: 100%;
 }
-.loncom_canvas_samllimg{
+.loncom_canvas_smallimg{
     position: absolute;
 }
-
+.loncom_canvas_smallimg img{
+    width: 100%;
+    height: 100%;
+}
 .device_detail{
     width: 250px;
     height: 100%;

@@ -31,6 +31,7 @@
         <div class="loncom_sidebar_right loncom_zt_sidebar_right" ref="content">
             <div id="canvas" class="loncom_zt_canvas" :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
                 <span v-for="item in video_list" v-if="item.state"><ZtDeviceVideo v-bind:dialogInfo="item"></ZtDeviceVideo></span>
+                <span v-for="item in access_list" v-if="item.state"><ZtDeviceAccess v-bind:dialogInfo="item"></ZtDeviceAccess></span>
             </div>
         </div>
         <!--电子地图新增编辑-->
@@ -41,7 +42,8 @@
 
 <script>
 import DialogZtMapAdd from '../components/dialogZtMapAdd.vue'
-import ZtDeviceVideo from '../components/ZtDeviceVideo.vue'
+import ZtDeviceVideo from '../components/ztDeviceVideo.vue'
+import ZtDeviceAccess from '../components/ztDeviceAccess.vue'
 
 export default {
     created () {
@@ -70,10 +72,10 @@ export default {
                 {id:'4',name:'',img:'static/zutai/images/video.png',setting:'admin@1234',type:'video',devid:'700000108'},
             ];
             deviceInfo.access=[
-                {id:'1',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000105'},
-                {id:'2',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000106'},
-                {id:'3',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000107'},
-                {id:'4',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'700000108'},
+                {id:'1',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'7000001051'},
+                {id:'2',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'7000001062'},
+                {id:'3',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'7000001073'},
+                {id:'4',name:'',img:'static/zutai/images/access.png',setting:'admin@1234',type:'access',devid:'7000001084'},
             ];
             localStorage.deviceInfo = JSON.stringify(deviceInfo);
         }
@@ -88,6 +90,7 @@ export default {
             if(this.map_list.length>0){
                 this.canvas_img=this.map_list[this.mapIndex].img;
                 this.canvas_info=this.map_list[this.mapIndex].canvas_info;
+                console.log(this.canvas_info)
                 for(var i=0;i<this.map_list[this.mapIndex].jsonArr.length;i++){
                     switch(this.map_list[this.mapIndex].jsonArr[i].type){
                         case "video":
@@ -193,7 +196,7 @@ export default {
         },
 
     },
-    components:{DialogZtMapAdd,ZtDeviceVideo}
+    components:{DialogZtMapAdd,ZtDeviceVideo,ZtDeviceAccess}
 }
 </script>
 
