@@ -47,7 +47,7 @@ export default {
     methods:{
        //拖拽
         drag:function(ev){
-            console.log(12)
+            console.log(this)
             this.$parent.img_ev=ev;
             this.$parent.img_html=this;
         },

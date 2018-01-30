@@ -33,16 +33,16 @@
                     <el-tooltip class="item" content="返回" placement="top-end">
                         <span @click="backPage"><i class="fa fa-chevron-left"></i></span>
                     </el-tooltip>
-                    <el-tooltip class="item" content="上一步操作" placement="top-end">
-                        <span><i class="fa fa-mail-reply"></i></span>
+                    <el-tooltip class="item" content="撤销(Ctrl+z)" placement="top-end">
+                        <span @click="backout"><i class="fa fa-mail-reply"></i></span>
                     </el-tooltip>
-                    <el-tooltip class="item" content="下一步操作" placement="top-end">
-                        <span><i class="fa fa-mail-forward"></i></span>
+                    <el-tooltip class="item" content="反撤销(Ctrl+y)" placement="top-end">
+                        <span @click="returnBackout"><i class="fa fa-mail-forward"></i></span>
                     </el-tooltip>
-                    <el-tooltip class="item" content="删除设备" placement="top-end">
+                    <el-tooltip class="item" content="删除设备(Delete)" placement="top-end">
                         <span @click="removeDevice"><i class="fa fa-remove"></i></span>
                     </el-tooltip>
-                    <el-tooltip class="item" content="保存操作" placement="top-end">
+                    <el-tooltip class="item" content="保存操作(Ctrl+s)" placement="top-end">
                         <span @click="saveDevice"><i class="fa fa-save"></i></span>
                     </el-tooltip>
                     <el-tooltip class="item" content="上传机房图" placement="top-end">
@@ -143,6 +143,8 @@ export default {
                         Vue.set(list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
                         Vue.set(list[i],'index',i);
                         _this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j]);
+                        _this.init_device.push(mapInfo.map_list[obj.index].jsonArr[j]);
+
                         break;
                     }else{
                         defaultInfo(list,i);
@@ -161,6 +163,7 @@ export default {
                     break;
             }
             Vue.set(list[i],'state',false);
+            Vue.set(list[i],'index',i);
             Vue.set(list[i],'json',{
                 name:'',img:imgUrl,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
                 pic_size:{width:60,height:60},
@@ -190,35 +193,33 @@ export default {
         
     },
     mounted() {
-        ztTabScroll(0)
-        tabScroll(1)
-        $(window).resize(function () {
-            ztTabScroll(0)
-            tabScroll(1)
-        });
+        // ztTabScroll(0)
+        // tabScroll(1)
+        // $(window).resize(function () {
+        //     ztTabScroll(0)
+        //     tabScroll(1)
+        // });
         var _this=this;
-        document.onkeyup=function(event){
+        document.onkeydown=function(event){
             var ev = event || window.event || arguments.callee.caller.arguments[0];
-            if(ev.keyCode == 46){
-                _this.removeDevice();
-            }
             if(ev){
                 switch(ev.keyCode){
                     case 46 :// 点击删除
                         _this.removeDevice();
                         break;
                     case 90:
-                        if(event.ctrlKey){
-                            
+                        if(ev.ctrlKey){ //撤销 ctrl+z
+                            _this.backout();
                         }
                         break;
                     case 89:
-                        if(event.ctrlKey){
-                           
+                        if(ev.ctrlKey){ //反撤销  ctrl+y
+                           _this.returnBackout();
                         }
                         break;
                     case 83:
-                        if(event.ctrlKey){
+                        ev.preventDefault(); 
+                        if(ev.ctrlKey){
                             _this.saveDevice();
                         }
                         break;
@@ -230,6 +231,14 @@ export default {
         this.canvas_info.width=$("#canvas").width();
         this.canvas_info.height=$("#canvas").height();
         this.canvas_info.bg=getBackgroundImageSize($("#canvas"));
+        //将初始化的设备赋不同的地址
+        var _arr=[];
+        for(var i=0;i<this.init_device.length;i++){
+            _arr.push(JSON.parse(JSON.stringify(this.init_device[i])));
+        }
+        this.init_device=_arr.slice(0);
+        
+
     },
     data() {
        return {
@@ -292,7 +301,21 @@ export default {
             device_arrinfo:[],
             //width，height，背景图片大小保存的时候要存入，因为跳转到index时要用到这个参数
             canvas_info:{},
-
+            //撤销的数组，撤销将数组最后一个元素去掉，在反撤销的最后增加这个元素，每一个设备，操作都要存入撤销数组
+            backoutArr:[],
+            //反撤销数组，反撤销将数组最后一个元素去掉，在撤销最后增加这个元素
+            returnBackoutArr:[],
+            //操作的次数，退出时判断是否保存了用的
+            handle_num:'',
+            //保存删除的设备删除之前的状态，删除时存储
+            delete_device:[],
+            //保存删除的设备删除之前的状态，撤销时存储
+            return_delete_device:[],
+            //保存初始化时已有的设备状态
+            init_device:[],
+            init_device1:[],
+            //保存初始化时已有的设备状态，撤销时存储
+            return_init_device:[],
 
        }
    },
@@ -343,6 +366,10 @@ export default {
         },
         //返回主页面
         backPage:function(){
+            if(this.handle_num==""||this.handle_num!=this.backoutArr.length){
+                this.$message.warning('请保存操作');
+                return;
+            }
             this.$router.push({path:'/',query:{'index':this.mapIndex}});
         },
         //拖拽
@@ -370,6 +397,9 @@ export default {
                         list_item=this.judge(this.access_list,devid);
                         break;
                 }
+                if(list_item==false){
+                    return;
+                }
                 //拖拽的设备点击的那个点相对于设备自己的偏移this.img_ev.offsetX,this.img_ev.offsetY
                 //拖拽的设备点击的那个点相对于右边电子地图的偏移量，拖拽后放手的那刻ev.offsetX,ev.offsetY
                 if(ev.offsetX-this.img_ev.offsetX<0){
@@ -386,10 +416,17 @@ export default {
                 }else{
                    list_item.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
-                this.device_arrinfo.push(list_item);
+                this.device_arrinfo.push(list_item);  //存储拖拽过来的组件
+                this.backoutArr.push(list_item);  //保存操作
+                //如果之前的returnBackoutArr有这个先删除，这种情况是新加了一个设备，然后撤销，又重新新加了这个设备
+                for(var i=0;i<this.returnBackoutArr.length;i++){
+                    if(list_item.type==this.returnBackoutArr[i].type&&list_item.devid==this.returnBackoutArr[i].devid){
+                        this.returnBackoutArr.splice(i,1);
+                    }
+                }
+                console.log(list_item); 
 
             }else{ //在地图上拖拽
-                console.log(this.img_html);
                 //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
                 if(ev.offsetX-this.img_ev.offsetX<0){
                     this.img_html.dialogInfo.json.pic_offset.offsetX=0;
@@ -405,7 +442,8 @@ export default {
                 }else{
                     this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
-               
+                this.backoutArr.push(this.img_html.dialogInfo);  //保存操作
+               console.log(this.img_html)
             }
             
            
@@ -486,8 +524,9 @@ export default {
 
                 }
                 for(var i=0;i<this.device_arrinfo.length;i++){
-                    if(this.device_arrinfo[i].type==this.img_html.dialogInfo.type&&this.device_arrinfo[i].devid==this.img_html.dialogInfo.devid){
-                        this.device_arrinfo.splice(i,1);
+                    if(this.device_arrinfo[i].type==this.img_html.dialogInfo.type&&this.device_arrinfo[i].devid==this.img_html.dialogInfo.devid){   
+                        this.delete_device.push(this.device_arrinfo[i]);  //保存删除的设备删除之前的状态，撤销反撤销用
+                        this.device_arrinfo.splice(i,1);  //先保存在删除
                     }
                 }
                 $(this.$refs.deviceShowDetail).css("right","-250px");
@@ -496,20 +535,6 @@ export default {
             });
             
         },
-        //保存操作
-        saveDevice:function(){
-            console.log(this.device_arrinfo)
-            var mapInfo=JSON.parse(localStorage.mapInfo);
-            console.log(mapInfo)
-            mapInfo.map_list[this.mapIndex].jsonArr=[];
-            mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
-            mapInfo.map_list[this.mapIndex].img=this.canvas_img;
-            mapInfo.map_list[this.mapIndex].canvas_info=this.canvas_info;
-            localStorage.mapInfo = JSON.stringify(mapInfo);
-            console.log(mapInfo);
-            this.$message.success('保存成功');
-
-        },
         //第一次拖进来的时候判断是否已经存在此设备
         judge:function(list,devid){
             var list_item;
@@ -517,7 +542,7 @@ export default {
                 if(list[i].devid==devid){
                     if(list[i].state==true){
                         this.$message.error('设备已存在！');
-                        return;
+                        return false;
                     }else{
                         list[i].state=true;
                         list_item=list[i];
@@ -535,8 +560,81 @@ export default {
                 pic_size:{width:60,height:60},
                 pic_offset:{offsetX:'',offsetY:''}
             }
+            this.backoutArr.push(list[index]);  //保存操作
+            console.log(this.backoutArr)
         },
+        //保存操作
+        saveDevice:function(){
+            
+            var mapInfo=JSON.parse(localStorage.mapInfo);
+            mapInfo.map_list[this.mapIndex].jsonArr=[];
+            mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
+            mapInfo.map_list[this.mapIndex].img=this.canvas_img;
+            mapInfo.map_list[this.mapIndex].canvas_info=this.canvas_info;
+            localStorage.mapInfo = JSON.stringify(mapInfo);
+            this.$message.success('保存成功');
+            this.handle_num=this.backoutArr.length;
 
+        },
+        //撤销
+        backout:function(){
+            //debugger
+            if(this.backoutArr.length>0){
+                var lastObj=this.backoutArr[this.backoutArr.length-1];
+                var type=this.backoutArr[this.backoutArr.length-1].type;
+                var index=this.backoutArr[this.backoutArr.length-1].index;
+                if(lastObj.state){ //最后一步是移动操作
+                    var arr=[];
+                    for(var i=0;i<this.backoutArr.length;i++){
+                        if(this.backoutArr[i].type==lastObj.type&&this.backoutArr[i].devid==lastObj.devid){
+                            arr.push(this.backoutArr[i]);
+                        }
+                    }
+                    if(arr.length>1){ //数组中倒数第二个状态就是要撤销回来的状态
+                        switch(type){
+                            case "video":
+                                this.video_list.splice(index,1,arr[arr.length-2]);
+                            case "access":
+                                this.access_list.splice(index,1,arr[arr.length-2]);
+                        }
+                    }else{  //数组中只有一个此设备的状态了，判断是初始化就存在的设备还是拖进来的，初始化的就不管了,拖进来的就删除
+                        console.log(this.init_device1)
+                        console.log(this.init_device)
+                        for(var i=0;i<this.init_device.length;i++){
+                            if(this.init_device[i].type==lastObj.type&&this.init_device[i].devid==lastObj.devid){ //初始化就有的
+                                switch(type){  
+                                    case "video":
+                                        this.video_list.splice(index,1,this.init_device[i]);
+                                    case "access":
+                                        this.access_list.splice(index,1,this.init_device[i]);
+                                        console.log(this.init_device[i]);
+                                        console.log(this.access_list[index]);
+                                }
+                            }
+                        }
+                    }
+                    
+                }else{//最后一步是删除设备操作
+                    switch(type){  //先撤销回删除时的状态
+                        case "video":
+                            this.video_list.splice(index,1,this.delete_device[this.delete_device.length-1]);
+                        case "access":
+                            this.access_list.splice(index,1,this.delete_device[this.delete_device.length-1]);
+                    }
+                    //再操作撤回后的数组状态
+                    this.return_delete_device.push(this.delete_device[this.delete_device.length-1]);
+                    this.delete_device.splice(this.delete_device.length-1,1);
+                }
+                this.returnBackoutArr.push(lastObj);
+                this.backoutArr.splice(this.backoutArr.length-1,1);
+            }else{
+                this.$message.warning('没有撤销的操作！');
+            }
+        },
+        //反撤销
+        returnBackout:function(){
+            console.log(3434)
+        },
 
     },
     components:{DialogZtUploadImg,ZtDevice}
