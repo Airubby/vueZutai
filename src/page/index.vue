@@ -30,8 +30,8 @@
         </div>
         <div class="loncom_sidebar_right loncom_zt_sidebar_right" ref="content">
             <div id="canvas" class="loncom_zt_canvas" :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
-                <span v-for="item in video_list" v-if="item.state"><ZtDeviceVideo v-bind:dialogInfo="item"></ZtDeviceVideo></span>
-                <span v-for="item in access_list" v-if="item.state"><ZtDeviceAccess v-bind:dialogInfo="item"></ZtDeviceAccess></span>
+                <span v-for="item in video_list" v-if="item.state"><ZtDeviceVideo v-bind:dialogInfo="item" v-on:init="init"></ZtDeviceVideo></span>
+                <span v-for="item in access_list" v-if="item.state"><ZtDeviceAccess v-bind:dialogInfo="item" v-on:init="init"></ZtDeviceAccess></span>
             </div>
         </div>
         <!--电子地图新增编辑-->
@@ -89,7 +89,9 @@ export default {
             console.log(this.map_list)
             if(this.map_list.length>0){
                 this.canvas_img=this.map_list[this.mapIndex].img;
-                this.canvas_info=this.map_list[this.mapIndex].canvas_info;
+                this.save_back.width=this.map_list[this.mapIndex].canvas_info.width;
+                this.save_back.height=this.map_list[this.mapIndex].canvas_info.height;
+                this.save_pic=this.map_list[this.mapIndex].canvas_info.bg;
                 console.log(this.canvas_info)
                 for(var i=0;i<this.map_list[this.mapIndex].jsonArr.length;i++){
                     switch(this.map_list[this.mapIndex].jsonArr[i].type){
@@ -134,6 +136,13 @@ export default {
             canvas_img:'',
             //width，height，背景图片大小
             canvas_info:{},
+            //容器页面大小 改变浏览器用到的信息
+            save_back:{
+                    width:'',
+                    height:''
+            },
+            //背景图片的尺寸 改变浏览器用到的信息
+            save_pic:'',
             //设备信息
             video_list:[],
             //门禁信息
@@ -194,6 +203,22 @@ export default {
 	       });
             
         },
+        //设备组件改变时
+        init:function(_this){
+            var now_back={
+                width: $("#canvas").width(),
+                height: $("#canvas").height()
+            }
+            var loc = nowLocation(this.save_back, _this.dialogInfo.json.pic_offset,this.save_pic,now_back,_this.dialogInfo.json.pic_size);
+            $(_this.$el).css({
+                "left":loc.x.toFixed(2)+"px",
+                "top":loc.y.toFixed(2)+"px",
+                "width":loc.width.toFixed(2)+"px",
+                "height":loc.height.toFixed(2)+"px"
+            });
+        },
+        
+
 
     },
     components:{DialogZtMapAdd,ZtDeviceVideo,ZtDeviceAccess}
