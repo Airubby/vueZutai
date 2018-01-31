@@ -193,8 +193,8 @@ export default {
         
     },
     mounted() {
-        // ztTabScroll(0)
-        // tabScroll(1)
+        ztTabScroll(0)
+        tabScroll(1)
         // $(window).resize(function () {
         //     ztTabScroll(0)
         //     tabScroll(1)
@@ -223,7 +223,6 @@ export default {
                             _this.saveDevice();
                         }
                         break;
-
                 }
             }
         }
@@ -307,6 +306,8 @@ export default {
             returnBackoutArr:[],
             //操作的次数，退出时判断是否保存了用的
             handle_num:'',
+            //操作属性，退出时判断是否保存了用的 默认保存了的
+            profile_save:true,
             //保存删除的设备删除之前的状态，删除时存储
             delete_device:[],
             //保存删除的设备删除之前的状态，撤销时存储
@@ -363,7 +364,7 @@ export default {
         },
         //返回主页面
         backPage:function(){
-            if(this.handle_num!=this.backoutArr.length){
+            if(this.handle_num!=this.backoutArr.length||!this.profile_save){
                 this.$message.warning('请保存操作');
                 return;
             }
@@ -460,7 +461,7 @@ export default {
         showDetail:function(ev){
             ev.stopPropagation();
             console.log(this.img_html)
-            this.form.title=this.img_html.dialogInfo.name;
+            this.form.title=this.img_html.dialogInfo.json.name;
             this.form.width=this.img_html.dialogInfo.json.pic_size.width;
             this.form.height=this.img_html.dialogInfo.json.pic_size.height;
             this.form.color1=this.img_html.dialogInfo.json.color1;
@@ -469,6 +470,7 @@ export default {
             this.form.color4=this.img_html.dialogInfo.json.color4;
             this.form.hisalarm=this.img_html.dialogInfo.json.hisalarm;
             this.form.img[0].url=this.img_html.dialogInfo.json.img;
+
             if(this.device_show){
                 $(this.$refs.deviceShowDetail).css("right","0");
                 this.device_show=false;
@@ -497,18 +499,19 @@ export default {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
-                }).then(() => {
-                    this.img_html.dialogInfo.json.name=this.form.title;
-                    this.img_html.dialogInfo.json.pic_size.width=this.form.width;
-                    this.img_html.dialogInfo.json.pic_size.height=this.form.height;
-                    this.img_html.dialogInfo.json.color1=this.form.color1;
-                    this.img_html.dialogInfo.json.color2=this.form.color2;
-                    this.img_html.dialogInfo.json.color3=this.form.color3;
-                    this.img_html.dialogInfo.json.color4=this.form.color4;
-                    this.img_html.dialogInfo.json.hisalarm=this.form.hisalarm;
-                    $(this.$refs.deviceShowDetail).css("right","-250px");
-                    this.device_show=true;
-                });
+            }).then(() => {
+                this.img_html.dialogInfo.json.name=this.form.title;
+                this.img_html.dialogInfo.json.pic_size.width=this.form.width;
+                this.img_html.dialogInfo.json.pic_size.height=this.form.height;
+                this.img_html.dialogInfo.json.color1=this.form.color1;
+                this.img_html.dialogInfo.json.color2=this.form.color2;
+                this.img_html.dialogInfo.json.color3=this.form.color3;
+                this.img_html.dialogInfo.json.color4=this.form.color4;
+                this.img_html.dialogInfo.json.hisalarm=this.form.hisalarm;
+                $(this.$refs.deviceShowDetail).css("right","-250px");
+                this.device_show=true;
+                this.profile_save=false;
+            });
         },
         //删除设备
         removeDevice:function(){
@@ -573,7 +576,7 @@ export default {
         },
         //保存操作
         saveDevice:function(){
-            
+            console.log(this.device_arrinfo)
             var mapInfo=JSON.parse(localStorage.mapInfo);
             mapInfo.map_list[this.mapIndex].jsonArr=[];
             mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
@@ -582,7 +585,7 @@ export default {
             localStorage.mapInfo = JSON.stringify(mapInfo);
             this.$message.success('保存成功');
             this.handle_num=this.backoutArr.length;
-
+            this.profile_save=true;
         },
         //撤销
         backout:function(){
@@ -666,8 +669,9 @@ export default {
                 this.$message.warning('没有反撤销的操作！');
             }
         },
-
+        
     },
+    
     components:{DialogZtUploadImg,ZtDevice}
 }
 </script>
