@@ -417,14 +417,9 @@ export default {
                    list_item.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
                 this.device_arrinfo.push(list_item);  //存储拖拽过来的组件
-                this.backoutArr.push(list_item);  //保存操作
-                //如果之前的returnBackoutArr有这个先删除，这种情况是新加了一个设备，然后撤销，又重新新加了这个设备
-                for(var i=0;i<this.returnBackoutArr.length;i++){
-                    if(list_item.type==this.returnBackoutArr[i].type&&list_item.devid==this.returnBackoutArr[i].devid){
-                        this.returnBackoutArr.splice(i,1);
-                    }
-                }
-                console.log(list_item); 
+                var obj=JSON.parse(JSON.stringify(list_item));
+                this.backoutArr.push(obj);  //保存操作
+                
 
             }else{ //在地图上拖拽
                 //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
@@ -442,8 +437,9 @@ export default {
                 }else{
                     this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
-                this.backoutArr.push(this.img_html.dialogInfo);  //保存操作
-               console.log(this.img_html)
+                var obj=JSON.parse(JSON.stringify(this.img_html.dialogInfo));
+                this.backoutArr.push(obj);  //保存操作
+                console.log(this.img_html)
             }
             
            
@@ -578,7 +574,8 @@ export default {
         },
         //撤销
         backout:function(){
-            //debugger
+            debugger
+            console.log(this.backoutArr);
             if(this.backoutArr.length>0){
                 var lastObj=this.backoutArr[this.backoutArr.length-1];
                 var type=this.backoutArr[this.backoutArr.length-1].type;
@@ -590,16 +587,16 @@ export default {
                             arr.push(this.backoutArr[i]);
                         }
                     }
-                    if(arr.length>1){ //数组中倒数第二个状态就是要撤销回来的状态
+                    if(arr.length>1){  //等于1时就是第一次操作此设备
                         switch(type){
                             case "video":
-                                this.video_list.splice(index,1,arr[arr.length-2]);
+                                this.video_list.splice(index,1,this.backoutArr[this.backoutArr.length-2]);
                             case "access":
-                                this.access_list.splice(index,1,arr[arr.length-2]);
+                                this.access_list.splice(index,1,this.backoutArr[this.backoutArr.length-2]);
                         }
-                    }else{  //数组中只有一个此设备的状态了，判断是初始化就存在的设备还是拖进来的，初始化的就不管了,拖进来的就删除
-                        console.log(this.init_device1)
-                        console.log(this.init_device)
+                    }else{  //此设备就只操作了这一次
+                        //数组中只有一个此设备的状态了，判断是初始化就存在的设备还是拖进来的，初始化的就还原为初始化的状态,拖进来的就不显示了
+                        var moveTo=true; //假设为拖进来的
                         for(var i=0;i<this.init_device.length;i++){
                             if(this.init_device[i].type==lastObj.type&&this.init_device[i].devid==lastObj.devid){ //初始化就有的
                                 switch(type){  
@@ -607,14 +604,21 @@ export default {
                                         this.video_list.splice(index,1,this.init_device[i]);
                                     case "access":
                                         this.access_list.splice(index,1,this.init_device[i]);
-                                        console.log(this.init_device[i]);
-                                        console.log(this.access_list[index]);
+                                        
                                 }
+                                moveTo=false;
+                            }
+                        }
+                        if(moveTo){ //拖进来的
+                            switch(type){  
+                                case "video":
+                                    this.video_list[index].state=false;
+                                case "access":
+                                    this.access_list[index].state=false;
                             }
                         }
                     }
-                    
-                }else{//最后一步是删除设备操作
+                }else{ //最后一步是删除设备操作
                     switch(type){  //先撤销回删除时的状态
                         case "video":
                             this.video_list.splice(index,1,this.delete_device[this.delete_device.length-1]);
@@ -627,6 +631,58 @@ export default {
                 }
                 this.returnBackoutArr.push(lastObj);
                 this.backoutArr.splice(this.backoutArr.length-1,1);
+
+                // if(lastObj.state){ //最后一步是移动操作
+                //     var arr=[];
+                //     for(var i=0;i<this.backoutArr.length;i++){
+                //         if(this.backoutArr[i].type==lastObj.type&&this.backoutArr[i].devid==lastObj.devid){
+                //             arr.push(this.backoutArr[i]);
+                //         }
+                //     }
+                //     if(arr.length>1){ //backoutArr数组中倒数第二个状态就是要撤销回来的状态
+                //         switch(type){
+                //             case "video":
+                //                 this.video_list.splice(index,1,this.backoutArr[this.backoutArr.length-2]);
+                //             case "access":
+                //                 this.access_list.splice(index,1,this.backoutArr[this.backoutArr.length-2]);
+                //         }
+                //     }else{  //数组中只有一个此设备的状态了，判断是初始化就存在的设备还是拖进来的，初始化的就不管了,拖进来的就删除
+                //         var moveTo=true; //假设为拖进来的
+                //         for(var i=0;i<this.init_device.length;i++){
+                //             if(this.init_device[i].type==lastObj.type&&this.init_device[i].devid==lastObj.devid){ //初始化就有的
+                //                 switch(type){  
+                //                     case "video":
+                //                         this.video_list.splice(index,1,this.init_device[i]);
+                //                     case "access":
+                //                         this.access_list.splice(index,1,this.init_device[i]);
+                                        
+                //                 }
+                //                 moveTo=false;
+                //             }
+                //         }
+                //         if(moveTo){
+                //             switch(type){  
+                //                 case "video":
+                //                     this.video_list.splice(index,1,this.backoutArr[this.backoutArr.length-1]);
+                //                 case "access":
+                //                     this.access_list.splice(index,1,this.backoutArr[this.backoutArr.length-1]);
+                //             }
+                //         }
+                //     }
+                    
+                // }else{//最后一步是删除设备操作
+                //     switch(type){  //先撤销回删除时的状态
+                //         case "video":
+                //             this.video_list.splice(index,1,this.delete_device[this.delete_device.length-1]);
+                //         case "access":
+                //             this.access_list.splice(index,1,this.delete_device[this.delete_device.length-1]);
+                //     }
+                //     //再操作撤回后的数组状态
+                //     this.return_delete_device.push(this.delete_device[this.delete_device.length-1]);
+                //     this.delete_device.splice(this.delete_device.length-1,1);
+                // }
+                // this.returnBackoutArr.push(lastObj);
+                // this.backoutArr.splice(this.backoutArr.length-1,1);
             }else{
                 this.$message.warning('没有撤销的操作！');
             }
