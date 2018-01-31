@@ -420,23 +420,38 @@ export default {
 
             }else{ //在地图上拖拽
                 //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
-                if(ev.offsetX-this.img_ev.offsetX<0){
-                    this.img_html.dialogInfo.json.pic_offset.offsetX=0;
-                }else if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
-                    this.img_html.dialogInfo.json.pic_offset.offsetX=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
-                }else{
-                    this.img_html.dialogInfo.json.pic_offset.offsetX=ev.offsetX-this.img_ev.offsetX
+                if(ev.offsetX-this.img_ev.offsetX<0){ //左边拖出地图了，或者向左拖动了一点点
+                    if(ev.x+this.img_ev.offsetX>this.img_ev.x){ //向左移动了一点
+                        this.img_html.dialogInfo.json.pic_offset.offsetX=this.img_html.dialogInfo.json.pic_offset.offsetX-(this.img_ev.offsetX-ev.offsetX);
+                    }else{
+                        this.img_html.dialogInfo.json.pic_offset.offsetX=0;
+                    }
+                }else{ //右边拖出地图了，或者向右拖动了一点点
+                    if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
+                        this.img_html.dialogInfo.json.pic_offset.offsetX=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
+                    }else if(ev.offsetX<this.img_html.dialogInfo.json.pic_size.width){
+                        this.img_html.dialogInfo.json.pic_offset.offsetX=this.img_html.dialogInfo.json.pic_offset.offsetX+(ev.offsetX-this.img_ev.offsetX);
+                    }else{
+                        this.img_html.dialogInfo.json.pic_offset.offsetX=ev.offsetX-this.img_ev.offsetX
+                    }
                 }
-                if(ev.offsetY-this.img_ev.offsetY<0){
-                    this.img_html.dialogInfo.json.pic_offset.offsetY=0;
-                }else if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()){
-                    this.img_html.dialogInfo.json.pic_offset.offsetY=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
-                }else{
-                    this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
+                if(ev.offsetY-this.img_ev.offsetY<0){ //上边拖出地图了，或者向上拖动了一点点
+                    if(ev.y+this.img_ev.offsetY>this.img_ev.y){ //向上移动了一点
+                        this.img_html.dialogInfo.json.pic_offset.offsetY=this.img_html.dialogInfo.json.pic_offset.offsetY-(this.img_ev.offsetY-ev.offsetY);
+                    }else{
+                        this.img_html.dialogInfo.json.pic_offset.offsetY=0;
+                    }
+                }else{ //下边拖出地图了，或者向下拖动了一点点
+                    if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()){
+                        this.img_html.dialogInfo.json.pic_offset.offsetY=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
+                    }else if(ev.offsetY<this.img_html.dialogInfo.json.pic_size.height){
+                        this.img_html.dialogInfo.json.pic_offset.offsetY=this.img_html.dialogInfo.json.pic_offset.offsetY+(ev.offsetY-this.img_ev.offsetY);
+                    }else{
+                        this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
+                    }
                 }
                 var obj=JSON.parse(JSON.stringify(this.img_html.dialogInfo));
                 this.backoutArr.push(obj);  //保存操作
-                console.log(this.img_html)
             }
             
            
