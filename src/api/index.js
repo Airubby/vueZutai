@@ -55,8 +55,8 @@ function apiAxios (method, url, params, success, failure) {
   axios({
     method: method,
     url: url,
-    data: method === 'POST' || method === 'PUT' ? params : null,
-    params: method === 'GET' || method === 'DELETE' ? params : null,
+    data: method === 'POST' || method === 'GET' ? params : null,
+    params: method === 'POST' || method === 'GET' ? params : null,
     baseURL: root,
     withCredentials: true
   })

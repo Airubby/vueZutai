@@ -9,7 +9,7 @@
                     <div class="loncom_zt_sidebarcon loncom_zt_sidebarcon1">
                         <div class="loncom_zt_sidebarbox" v-for="(item,index) in map_list">
                             <div class="loncom_zt_maptitle">{{item.name}}</div>
-                            <div class="loncom_zt_mapimg">
+                            <div class="loncom_zt_mapimg" @click="showMap(item,index)">
                                 <img :src="item.img">
                             </div>
                             <div class="loncom_zt_map_btn">
@@ -109,12 +109,10 @@ export default {
 
     },
     mounted() {
-        tabScroll(0)
-        tabScroll(1)
-        $(window).resize(function () {
-            tabScroll(0)
-            tabScroll(1)
-        });
+        ztTabScroll(0)
+        ztTabScroll(1)
+        // $(window).resize(function () {
+        // });
     },
     data() {
        return {
@@ -217,7 +215,28 @@ export default {
                 "height":loc.height.toFixed(2)+"px"
             });
         },
-        
+        //点击切换地图
+        showMap:function(item,index){
+            console.log(index)
+            console.log(item)
+            this.mapIndex=index;
+            this.canvas_img=item.img;
+            this.save_back.width=item.canvas_info.width;
+            this.save_back.height=item.canvas_info.height;
+            this.save_pic=item.canvas_info.bg;
+            this.video_list=[];
+            this.access_list=[];
+            for(var i=0;i<item.jsonArr.length;i++){
+                switch(item.jsonArr[i].type){
+                    case "video":
+                        this.video_list.push(item.jsonArr[i]);
+                        break;
+                    case "access":
+                        this.access_list.push(item.jsonArr[i]);
+                        break;
+                }
+            }
+        },
 
 
     },
