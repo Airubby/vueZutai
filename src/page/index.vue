@@ -8,7 +8,7 @@
                 <el-tab-pane label="设备地图" name="second" class="el-tab-pane1">
                     <div class="loncom_zt_sidebarcon loncom_zt_sidebarcon1">
                         <div class="loncom_zt_sidebarbox" v-for="(item,index) in map_list">
-                            <div class="loncom_zt_maptitle">{{item.name}}</div>
+                            <div class="loncom_zt_maptitle" @click="showMap(item,index)">{{item.name}}</div>
                             <div class="loncom_zt_mapimg" @click="showMap(item,index)">
                                 <img :src="item.img">
                             </div>
@@ -86,13 +86,8 @@ export default {
             localStorage.mapInfo = JSON.stringify(mapInfo);
         }else{
             this.map_list=JSON.parse(localStorage.mapInfo).map_list;
-            console.log(this.map_list)
             if(this.map_list.length>0){
                 this.canvas_img=this.map_list[this.mapIndex].img;
-                this.save_back.width=this.map_list[this.mapIndex].canvas_info.width;
-                this.save_back.height=this.map_list[this.mapIndex].canvas_info.height;
-                this.save_pic=this.map_list[this.mapIndex].canvas_info.bg;
-                console.log(this.canvas_info)
                 for(var i=0;i<this.map_list[this.mapIndex].jsonArr.length;i++){
                     switch(this.map_list[this.mapIndex].jsonArr[i].type){
                         case "video":
@@ -134,13 +129,6 @@ export default {
             canvas_img:'',
             //width，height，背景图片大小
             canvas_info:{},
-            //容器页面大小 改变浏览器用到的信息
-            save_back:{
-                    width:'',
-                    height:''
-            },
-            //背景图片的尺寸 改变浏览器用到的信息
-            save_pic:'',
             //设备信息
             video_list:[],
             //门禁信息
@@ -189,6 +177,7 @@ export default {
         },
         //删除电子地图
         removeMap:function(item,index){
+            ev.stopPropagation();
             this.$confirm("删除此电子地图?", '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -203,11 +192,13 @@ export default {
         },
         //设备组件改变时
         init:function(_this){
+            console.log(_this)
             var now_back={
                 width: $("#canvas").width(),
                 height: $("#canvas").height()
             }
-            var loc = nowLocation(this.save_back, _this.dialogInfo.json.pic_offset,this.save_pic,now_back,_this.dialogInfo.json.pic_size);
+            console.log(now_back) //629,584
+            var loc = nowLocation(_this.dialogInfo.json.canvas_info, _this.dialogInfo.json.pic_offset,_this.dialogInfo.json.canvas_bg_info,now_back,_this.dialogInfo.json.pic_size);
             $(_this.$el).css({
                 "left":loc.x.toFixed(2)+"px",
                 "top":loc.y.toFixed(2)+"px",
@@ -217,13 +208,9 @@ export default {
         },
         //点击切换地图
         showMap:function(item,index){
-            console.log(index)
             console.log(item)
             this.mapIndex=index;
             this.canvas_img=item.img;
-            this.save_back.width=item.canvas_info.width;
-            this.save_back.height=item.canvas_info.height;
-            this.save_pic=item.canvas_info.bg;
             this.video_list=[];
             this.access_list=[];
             for(var i=0;i<item.jsonArr.length;i++){

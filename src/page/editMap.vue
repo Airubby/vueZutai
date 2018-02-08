@@ -168,7 +168,8 @@ export default {
                 name:'',img:imgUrl,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
                 pic_size:{width:60,height:60},
                 pic_offset:{offsetX:'',offsetY:''},
-                canvas_info:{width:'',height:'',bg:''}
+                canvas_info:{width:'',height:''},
+                canvas_bg_info:{width:'',height:''}
             });
         }
         function noDeviceInfo(list){
@@ -178,6 +179,7 @@ export default {
         }
         if(localStorage.deviceInfo){
             var deviceInfo=JSON.parse(localStorage.deviceInfo);
+            console.log(deviceInfo)
             this.video_list=deviceInfo.video;
             this.access_list=deviceInfo.access;
             if(mapInfo.map_list[obj.index].jsonArr.length>0){  //初始化时有设备
@@ -229,7 +231,7 @@ export default {
         //canvas_info width，height，背景图片大小
         this.canvas_info.width=$("#canvas").width();
         this.canvas_info.height=$("#canvas").height();
-        this.canvas_info.bg=getBackgroundImageSize($("#canvas"));
+        this.canvas_bg_info=getBackgroundImageSize($("#canvas"));
         //将初始化的设备赋不同的地址
         var _arr=[];
         for(var i=0;i<this.init_device.length;i++){
@@ -298,8 +300,10 @@ export default {
             device_show:true,  //是否可以显示侧边详情
             //保存地图上的设备信息
             device_arrinfo:[],
-            //width，height，背景图片大小保存的时候要存入，因为跳转到index时要用到这个参数
+            //width，height，canvas大小保存的时候要存入，因为跳转到index时要用到这个参数
             canvas_info:{},
+            //width,height ，背景图片大小保存的时候要存入，因为跳转到index时要用到这个参数
+            canvas_bg_info:{},
             //撤销的数组，撤销将数组最后一个元素去掉，在反撤销的最后增加这个元素，每一个设备，操作都要存入撤销数组
             backoutArr:[],
             //反撤销数组，反撤销将数组最后一个元素去掉，在撤销最后增加这个元素
@@ -419,11 +423,11 @@ export default {
                 }else{
                    list_item.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                 }
-                var obj=JSON.parse(JSON.stringify(list_item));
-                console.log(obj)
-                this.device_arrinfo.push(obj);  //存储拖拽过来的组件
-                this.backoutArr.push(obj);  //保存操作
-                console.log(this.backoutArr)
+                list_item.json.canvas_info=this.canvas_info;  //canvas的width和height
+                list_item.json.canvas_bg_info=this.canvas_bg_info;  //背景图片的width和heihgt
+                this.device_arrinfo.push(list_item);  //存储拖拽过来的组件
+                var _obj=JSON.parse(JSON.stringify(list_item));
+                this.backoutArr.push(_obj);  //保存操作
                 //this.backoutArr[this.backoutArr.length]=obj; //保存操作
 
             }else{ //在地图上拖拽
@@ -458,8 +462,8 @@ export default {
                         this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
                     }
                 }
-                var obj=JSON.parse(JSON.stringify(this.img_html.dialogInfo));
-                this.backoutArr.push(obj);  //保存操作
+                var _obj=JSON.parse(JSON.stringify(this.img_html.dialogInfo));
+                this.backoutArr.push(_obj);  //保存操作
                 //this.backoutArr[this.backoutArr.length]=obj; //保存操作
             }
             
@@ -544,7 +548,8 @@ export default {
                 }
                 for(var i=0;i<this.device_arrinfo.length;i++){
                     if(this.device_arrinfo[i].type==this.img_html.dialogInfo.type&&this.device_arrinfo[i].devid==this.img_html.dialogInfo.devid){   
-                        this.delete_device.push(this.device_arrinfo[i]);  //保存删除的设备删除之前的状态，撤销反撤销用
+                        var _obj=JSON.parse(JSON.stringify(this.device_arrinfo[i]));
+                        this.delete_device.push(_obj);  //保存删除的设备删除之前的状态，撤销反撤销用
                         this.device_arrinfo.splice(i,1);  //先保存在删除
                     }
                 }
@@ -579,7 +584,8 @@ export default {
                 pic_size:{width:60,height:60},
                 pic_offset:{offsetX:'',offsetY:''}
             }
-            this.backoutArr.push(list[index]);  //保存操作
+            var _obj=JSON.parse(JSON.stringify(list[index]));
+            this.backoutArr.push(_obj);  //保存操作
             console.log(this.backoutArr)
         },
         //保存操作
@@ -589,7 +595,7 @@ export default {
             mapInfo.map_list[this.mapIndex].jsonArr=[];
             mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
             mapInfo.map_list[this.mapIndex].img=this.canvas_img;
-            mapInfo.map_list[this.mapIndex].canvas_info=this.canvas_info;
+            //mapInfo.map_list[this.mapIndex].canvas_info=this.canvas_info; //首页用其实只用了背景，宽高不用，宽高存jsonArr中的json中了
             localStorage.mapInfo = JSON.stringify(mapInfo);
             this.$message.success('保存成功');
             this.handle_num=this.backoutArr.length;
@@ -636,9 +642,13 @@ export default {
                         if(moveTo){ //拖进来的
                             switch(type){  
                                 case "video":
-                                    this.video_list[index].state=false;
+                                    if(this.video_list[index]){
+                                        this.video_list[index].state=false;
+                                    }
                                 case "access":
-                                    this.access_list[index].state=false;
+                                    if(this.access_list[index]){ //不判断，如果this.access_list[index]不存在就找不到this.access_list[index].state就报错
+                                        this.access_list[index].state=false;
+                                    }
                             }
                         }
                     }

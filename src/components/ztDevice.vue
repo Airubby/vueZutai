@@ -25,23 +25,14 @@ export default {
         
     },
     mounted() {
-        this.save_back.width=$("#canvas").width();
-        this.save_back.height=$("#canvas").height();
-        this.save_pic=getBackgroundImageSize($("#canvas"));
         var _this=this;
         $("#canvas").resize(function () {
             _this.nowOffset();
         });
+        this.nowOffset();
     },
     data() {
        return {
-           //容器页面大小
-           save_back:{
-                width:'',
-                height:''
-           },
-            //背景图片的尺寸
-            save_pic:'',
        }
    },
     methods:{
@@ -59,7 +50,7 @@ export default {
                 width: $("#canvas").width(),
                 height: $("#canvas").height()
             }
-            var loc = nowLocation(this.save_back, this.dialogInfo.json.pic_offset,this.save_pic,now_back,this.dialogInfo.json.pic_size);
+            var loc = nowLocation(this.dialogInfo.json.canvas_info, this.dialogInfo.json.pic_offset,this.dialogInfo.json.canvas_bg_info,now_back,this.dialogInfo.json.pic_size);
          
             $(this.$el).css({
                 "left":loc.x.toFixed(2)+"px",
