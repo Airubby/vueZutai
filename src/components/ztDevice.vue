@@ -43,22 +43,7 @@ export default {
         },
 
         nowOffset:function(){
-            // 位置计算 @save_back容器页面大小width,height  @pic_offset保存位置left,top  @save_pic 背景图片大小width,height 
-            // @now_back改变后的容器页面大小width,height  @pic_size 控件大小
-            
-            var now_back={
-                width: $("#canvas").width(),
-                height: $("#canvas").height()
-            }
-            var loc = nowLocation(this.dialogInfo.json.canvas_info, this.dialogInfo.json.pic_offset,this.dialogInfo.json.canvas_bg_info,now_back,this.dialogInfo.json.pic_size);
-         
-            $(this.$el).css({
-                "left":loc.x.toFixed(2)+"px",
-                "top":loc.y.toFixed(2)+"px",
-                "width":loc.width.toFixed(2)+"px",
-                "height":loc.height.toFixed(2)+"px"
-            });
-
+            this.$emit('initDevice',this); 
         },
         //点击查询设备详情
         showDetail:function(event){

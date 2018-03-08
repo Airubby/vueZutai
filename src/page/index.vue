@@ -192,12 +192,10 @@ export default {
         },
         //设备组件改变时
         init:function(_this){
-            console.log(_this)
             var now_back={
                 width: $("#canvas").width(),
                 height: $("#canvas").height()
             }
-            console.log(now_back) //629,584
             var loc = nowLocation(_this.dialogInfo.json.canvas_info, _this.dialogInfo.json.pic_offset,_this.dialogInfo.json.canvas_bg_info,now_back,_this.dialogInfo.json.pic_size);
             $(_this.$el).css({
                 "left":loc.x.toFixed(2)+"px",

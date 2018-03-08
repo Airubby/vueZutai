@@ -106,8 +106,8 @@
                     </div>
                 </div>
                 <!--拖拽的设备-->
-                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:showDetail="showDetail"></ZtDevice></span>
-                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:showDetail="showDetail"></ZtDevice></span>
+                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:initDevice="initDevice" v-on:showDetail="showDetail"></ZtDevice></span>
+                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:initDevice="initDevice" v-on:showDetail="showDetail"></ZtDevice></span>
             </div>
         </div>
         <!--上传图片-->
@@ -523,6 +523,11 @@ export default {
                 $(this.$refs.deviceShowDetail).css("right","-250px");
                 this.device_show=true;
                 this.profile_save=false;
+
+                // var _obj=this.img_html;
+                // _obj.dialogInfo=JSON.parse(JSON.stringify(this.img_html.dialogInfo));
+                // this.initDevice(_obj);
+
             });
         },
         //删除设备
@@ -693,6 +698,22 @@ export default {
                 this.$message.warning('没有反撤销的操作！');
             }
             console.log(this.backoutArr)
+        },
+        //改变浏览器和初始化用
+        initDevice:function(_this){
+            console.log(_this)
+            var now_back={
+                width: $("#canvas").width(),
+                height: $("#canvas").height()
+            }
+            var loc = nowLocation(_this.dialogInfo.json.canvas_info, _this.dialogInfo.json.pic_offset,_this.dialogInfo.json.canvas_bg_info,now_back,_this.dialogInfo.json.pic_size);
+         
+            $(_this.$el).css({
+                "left":loc.x.toFixed(2)+"px",
+                "top":loc.y.toFixed(2)+"px",
+                "width":loc.width.toFixed(2)+"px",
+                "height":loc.height.toFixed(2)+"px"
+            });
         },
         
     },
