@@ -139,17 +139,25 @@ export default {
     methods:{
         //点击隐藏显示侧边
         navclick:function(){
-            if(this.navbtn=='open'){
-                $(this.$refs.sidebar).css("left","-225px");
+			if(this.navbtn=='open'){
+                $(this.$refs.sidebar).css({
+                    "left":"-225px",
+                    "transition":"all 0.4s ease-in"
+                });
                 $(this.$refs.content).css({
                     "padding-left":"0",
+                    "transition":"all 0.4s ease-in"
                 });
                 $(this.$refs.navbtn).addClass("fa-chevron-right");
                 this.navbtn='close';
             }else{
-                $(this.$refs.sidebar).css("left","0");
+                $(this.$refs.sidebar).css({
+                    "left":"0",
+                    "transition":"all 0.4s ease-in"
+                });
                 $(this.$refs.content).css({
                     "padding-left":"225px",
+                    "transition":"all 0.4s ease-in"
                 });
                 $(this.$refs.navbtn).removeClass("fa-chevron-right");
                 this.navbtn='open';
