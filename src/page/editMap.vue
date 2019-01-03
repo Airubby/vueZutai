@@ -55,7 +55,9 @@
                 </div>
             </div>
             <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
-            <div id="canvas" ref="canvas" @click="hideDevice" class="loncom_zt_canvas loncom_zt_canvasedit"  @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
+            <div id="canvas" ref="canvas" @click="hideDevice" class="loncom_zt_canvas loncom_zt_canvasedit"  
+            @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' 
+            :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
                 <!--拖拽的设备详情-->
                 <div class="device_detail" ref="deviceShowDetail" @click="preventClick($event)">
                     <div class="device_detail_title">
@@ -106,8 +108,8 @@
                     </div>
                 </div>
                 <!--拖拽的设备-->
-                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:initDevice="initDevice" v-on:showDetail="showDetail"></ZtDevice></span>
-                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:initDevice="initDevice" v-on:showDetail="showDetail"></ZtDevice></span>
+                <span v-for="item in video_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:showDetail="showDetail"></ZtDevice></span>
+                <span v-for="item in access_list" v-if="item.state"><ZtDevice v-bind:dialogInfo="item" v-on:showDetail="showDetail"></ZtDevice></span>
             </div>
         </div>
         <!--上传图片-->
@@ -231,7 +233,7 @@ export default {
         //canvas_info width，height，背景图片大小
         this.canvas_info.width=$("#canvas").width();
         this.canvas_info.height=$("#canvas").height();
-        this.canvas_bg_info=getBackgroundImageSize($("#canvas"));
+        
         //将初始化的设备赋不同的地址
         var _arr=[];
         for(var i=0;i<this.init_device.length;i++){
@@ -604,6 +606,10 @@ export default {
         //保存操作
         saveDevice:function(){
             console.log(this.device_arrinfo)
+            //保存的时候再循环给json中的canvas_bg_info赋值，如果开始没有背景，编辑的时候再又就得赋值
+            for(let i=0;i<this.device_arrinfo.length;i++){
+                this.device_arrinfo[i].json.canvas_bg_info=this.canvas_bg_info;
+            }
             var mapInfo=JSON.parse(localStorage.mapInfo);
             mapInfo.map_list[this.mapIndex].jsonArr=[];
             mapInfo.map_list[this.mapIndex].jsonArr=this.device_arrinfo;
@@ -707,25 +713,17 @@ export default {
             }
             console.log(this.backoutArr)
         },
-        //改变浏览器和初始化用
-        initDevice:function(_this){
-            console.log(_this)
-            var now_back={
-                width: $("#canvas").width(),
-                height: $("#canvas").height()
-            }
-            var loc = nowLocation(_this.dialogInfo.json.canvas_info, _this.dialogInfo.json.pic_offset,_this.dialogInfo.json.canvas_bg_info,now_back,_this.dialogInfo.json.pic_size);
-         
-            $(_this.$el).css({
-                "left":loc.x.toFixed(2)+"px",
-                "top":loc.y.toFixed(2)+"px",
-                "width":loc.width.toFixed(2)+"px",
-                "height":loc.height.toFixed(2)+"px"
-            });
-        },
+       
         
     },
-    
+    watch:{
+        canvas_img:function(val,oldval){
+            this.bg_img=true; //改变了背景
+            this.$nextTick(function(){
+                this.canvas_bg_info=getBackgroundImageSize($("#canvas"));
+            })
+        },
+    },
     components:{DialogZtUploadImg,ZtDevice}
 }
 </script>

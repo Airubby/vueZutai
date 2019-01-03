@@ -206,8 +206,8 @@ export default {
             }
             var loc = nowLocation(_this.dialogInfo.json.canvas_info, _this.dialogInfo.json.pic_offset,_this.dialogInfo.json.canvas_bg_info,now_back,_this.dialogInfo.json.pic_size);
             $(_this.$el).css({
-                "left":loc.x.toFixed(2)+"px",
-                "top":loc.y.toFixed(2)+"px",
+                "left":loc.left.toFixed(2)+"px",
+                "top":loc.top.toFixed(2)+"px",
                 "width":loc.width.toFixed(2)+"px",
                 "height":loc.height.toFixed(2)+"px"
             });

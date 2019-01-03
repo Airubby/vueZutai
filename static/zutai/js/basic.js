@@ -24,63 +24,107 @@ function getBackgroundImageSize(e){
             height:img.height
         }
     }
-
     return {
         width: $(e).width(),
         height: $(e).height()
     }
 }
-//位置计算 @save_back容器页面大小width,height  @pic_offset保存位置left,top  @save_pic 背景图片大小width,height 
-// @now_back改变后的容器页面大小width,height  @pic_size 控件大小
-function nowLocation(save_back, pic_offset, save_pic, now_back, pic_size) {
-    var mylocation = {};//返回位置
-    if ((pic_offset.offsetX - save_back.width <= 3 && pic_offset.offsetX - save_back.width >= -3) && (pic_offset.offsetY - save_back.height <= 3 && pic_offset.offsetY - save_back.height >= -3)) {//保存地点靠近中心点3像素范围内，直接返回中心店
-        mylocation.x = now_back.width / 2;
-        mylocation.y = now_back.height / 2;
-        return mylocation;
+//save_container容器页面大小{width:'',height:''},control_offset控件保存的位置{left:'',top:''},bg_pic背景图片大小{width:'',height:''},
+//now_container改变后的容器页面大小{width:'',height:''},control_size展示控件的大小{width:'',height:''}
+function nowLocation(save_container,control_offset,bg_pic,now_container,control_size){
+
+    var location={
+        left:control_offset.offsetX,
+        top:control_offset.offsetY,
+        width:control_size.width,
+        height:control_size.height
+    };
+    
+    var save_bg_pic={};   //保存时的背景contain填满时候的宽高width,height
+    var relative={}; //控件相对于背景的相对left,top
+    var width_scale=bg_pic.width/save_container.width;  //保存时候的背景容器宽度比
+    var height_scale=bg_pic.height/save_container.height; //保存时候的背景容器高度比
+    if(width_scale<=height_scale){ //背景高度填满的
+        save_bg_pic.height=save_container.height;
+        save_bg_pic.width=save_container.height*(bg_pic.width/bg_pic.height);
+
+        relative.left=location.left-(save_container.width-save_bg_pic.width)/2;
+        relative.top=location.top;
+    }else{
+        save_bg_pic.width=save_container.width;
+        save_bg_pic.height=save_bg_pic.width*(bg_pic.height/bg_pic.width);
+
+        relative.left=location.left;
+        relative.top=location.top-(save_container.height-save_bg_pic.height)/2;
     }
 
-    //返回位置
-    var kT = save_pic.width / save_pic.height;							//图片宽高比
-    var kH = save_back.width / save_back.height;	//保存视图区宽高比
-    var xH;								//保存时的图片宽度
-    //计算保存时图片宽度
-    if (kT <= kH) {//宽度溢出
-        xH = kT * save_back.height;
+    var scale; //缩放比例
+    var nowW_scale=save_bg_pic.width/now_container.width;
+    var nowH_scale=save_bg_pic.height/now_container.height;
+    
+    if(nowW_scale<=nowH_scale){
+        scale=now_container.height/save_bg_pic.height;
+    }else{
+        scale=now_container.width/save_bg_pic.width;
     }
-    else {
-        xH = save_back.width;
-    }
-    //计算保存时地点关于中心点坐标系的坐标
-    var p0 = {};
-    p0.x = pic_offset.offsetX - save_back.width / 2;
-    p0.y = pic_offset.offsetY - save_back.height / 2;
-
-    //计算当前图片宽度
-    var kN = now_back.width / now_back.height;	//当前视图区宽高比
-    var xN;
-    if (kT <= kN) {
-        xN = kT * now_back.height;
-    }
-    else {
-        xN = now_back.width;
-    }
-    //保存时图片大小和现在的图片大小缩放比例
-    var ks = xH / xN;
-    //现地点关于中心点坐标系的坐标为
-    var pn = {};
-    pn.x = p0.x / ks;
-    pn.y = p0.y / ks;
-
-    //现地点关于中心点左上角坐标系的坐标为
-    mylocation.x = pn.x + now_back.width / 2;
-    mylocation.y = pn.y + now_back.height / 2;
-    if (pic_size) {
-        mylocation.width = pic_size.width / ks;
-        mylocation.height = pic_size.height / ks;
-    }
-    return mylocation;
+    location.width=location.width*scale;
+    location.height=location.height*scale;
+    location.left=(now_container.width-save_bg_pic.width*scale)/2+relative.left*scale;
+    location.top=(now_container.height-save_bg_pic.height*scale)/2+relative.top*scale;
+    return location;
 }
+
+// //位置计算 @save_back容器页面大小width,height  @pic_offset保存位置left,top  @save_pic 背景图片大小width,height 
+// // @now_back改变后的容器页面大小width,height  @pic_size 控件大小
+// function nowLocation(save_back, pic_offset, save_pic, now_back, pic_size) {
+//     var mylocation = {};//返回位置
+//     if ((pic_offset.offsetX - save_back.width <= 3 && pic_offset.offsetX - save_back.width >= -3) && (pic_offset.offsetY - save_back.height <= 3 && pic_offset.offsetY - save_back.height >= -3)) {//保存地点靠近中心点3像素范围内，直接返回中心店
+//         mylocation.x = now_back.width / 2;
+//         mylocation.y = now_back.height / 2;
+//         return mylocation;
+//     }
+
+//     //返回位置
+//     var kT = save_pic.width / save_pic.height;							//图片宽高比
+//     var kH = save_back.width / save_back.height;	//保存视图区宽高比
+//     var xH;								//保存时的图片宽度
+//     //计算保存时图片宽度
+//     if (kT <= kH) {//宽度溢出
+//         xH = kT * save_back.height;
+//     }
+//     else {
+//         xH = save_back.width;
+//     }
+//     //计算保存时地点关于中心点坐标系的坐标
+//     var p0 = {};
+//     p0.x = pic_offset.offsetX - save_back.width / 2;
+//     p0.y = pic_offset.offsetY - save_back.height / 2;
+
+//     //计算当前图片宽度
+//     var kN = now_back.width / now_back.height;	//当前视图区宽高比
+//     var xN;
+//     if (kT <= kN) {
+//         xN = kT * now_back.height;
+//     }
+//     else {
+//         xN = now_back.width;
+//     }
+//     //保存时图片大小和现在的图片大小缩放比例
+//     var ks = xH / xN;
+//     //现地点关于中心点坐标系的坐标为
+//     var pn = {};
+//     pn.x = p0.x / ks;
+//     pn.y = p0.y / ks;
+
+//     //现地点关于中心点左上角坐标系的坐标为
+//     mylocation.x = pn.x + now_back.width / 2;
+//     mylocation.y = pn.y + now_back.height / 2;
+//     if (pic_size) {
+//         mylocation.width = pic_size.width / ks;
+//         mylocation.height = pic_size.height / ks;
+//     }
+//     return mylocation;
+// }
 //生成缩略图
 function newthumbnail(methods,obj){
     var canvasurl="";
@@ -106,37 +150,6 @@ function newthumbnail(methods,obj){
         //    document.querySelector(".down").setAttribute('href',canvas.toDataURL());
     });
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //获取位置
 function getLoc(event, obj) {
