@@ -57,6 +57,11 @@ export default {
                 "width":loc.width.toFixed(2)+"px",
                 "height":loc.height.toFixed(2)+"px"
             });
+            this.dialogInfo.json.pic_offset.offsetX=loc.left;
+            this.dialogInfo.json.pic_offset.offsetY=loc.top;
+            this.dialogInfo.json.pic_size.width=loc.width;
+            this.dialogInfo.json.pic_size.height=loc.height;
+            this.dialogInfo.json.canvas_info=now_back;
         },
         //点击查询设备详情
         showDetail:function(event){

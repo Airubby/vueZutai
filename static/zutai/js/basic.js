@@ -19,14 +19,16 @@ function getBackgroundImageSize(e){
     if (backImg && backImg != "none") {
         var img = new Image();
         img.src = backImg.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+        if(img.width==0||img.height==0||img.width==null||img.height==null){
+            return {
+                width: $(e).width(),
+                height: $(e).height()
+            }
+        }
         return {
             width:img.width,
             height:img.height
         }
-    }
-    return {
-        width: $(e).width(),
-        height: $(e).height()
     }
 }
 //save_container容器页面大小{width:'',height:''},control_offset控件保存的位置{left:'',top:''},bg_pic背景图片大小{width:'',height:''},
@@ -39,7 +41,6 @@ function nowLocation(save_container,control_offset,bg_pic,now_container,control_
         width:control_size.width,
         height:control_size.height
     };
-    
     var save_bg_pic={};   //保存时的背景contain填满时候的宽高width,height
     var relative={}; //控件相对于背景的相对left,top
     var width_scale=bg_pic.width/save_container.width;  //保存时候的背景容器宽度比

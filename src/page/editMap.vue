@@ -54,7 +54,7 @@
                     
                 </div>
             </div>
-            <div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>
+            <!--<div class="loncom_zt_backFull" ref="backFull" @click="backFullScreen"><el-button type="primary">退出全屏</el-button></div>-->
             <div id="canvas" ref="canvas" @click="hideDevice" class="loncom_zt_canvas loncom_zt_canvasedit"  
             @drop='drop($event)' @touchstart='drop($event)'  @dragover='allowDrop($event)' 
             :style='{background:"url("+canvas_img+") center center / contain no-repeat"}'>
@@ -130,70 +130,7 @@ export default {
             this.$router.push({path:'/login'});
             return;
         }
-        var obj = this.$route.query;
-        this.mapIndex=obj.index;
-        console.log(obj);
-        var mapInfo=JSON.parse(localStorage.mapInfo);
-        console.log(mapInfo)
-        //初始化侧边设备
-        var _this=this;
-        function hasDeviceInfo(list){
-            for(var i=0;i<list.length;i++){
-                for(var j=0;j<mapInfo.map_list[obj.index].jsonArr.length;j++){
-                    if(mapInfo.map_list[obj.index].jsonArr[j].type==list[i].type&&mapInfo.map_list[obj.index].jsonArr[j].devid==list[i].devid){
-                        Vue.set(list[i],'state',true);
-                        Vue.set(list[i],'json',mapInfo.map_list[obj.index].jsonArr[j].json);
-                        Vue.set(list[i],'index',i);
-                        _this.device_arrinfo.push(mapInfo.map_list[obj.index].jsonArr[j]);
-                        _this.init_device.push(mapInfo.map_list[obj.index].jsonArr[j]);
-
-                        break;
-                    }else{
-                        defaultInfo(list,i);
-                    }
-                }
-            }
-        }
-        function defaultInfo(list,i){
-            var imgUrl='';
-            switch(list[i].type){
-                case "video":
-                    imgUrl='static/zutai/images/video.png';
-                    break;
-                case "access":
-                    imgUrl='static/zutai/images/access.png';
-                    break;
-            }
-            Vue.set(list[i],'state',false);
-            Vue.set(list[i],'index',i);
-            Vue.set(list[i],'json',{
-                name:'',img:imgUrl,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
-                pic_size:{width:60,height:60},
-                pic_offset:{offsetX:'',offsetY:''},
-                canvas_info:{width:'',height:''},
-                canvas_bg_info:{width:'',height:''}
-            });
-        }
-        function noDeviceInfo(list){
-            for(var i=0;i<list.length;i++){
-                defaultInfo(list,i);
-            }
-        }
-        if(localStorage.deviceInfo){
-            var deviceInfo=JSON.parse(localStorage.deviceInfo);
-            console.log(deviceInfo)
-            this.video_list=deviceInfo.video;
-            this.access_list=deviceInfo.access;
-            if(mapInfo.map_list[obj.index].jsonArr.length>0){  //初始化时有设备
-                hasDeviceInfo(this.video_list);
-                hasDeviceInfo(this.access_list);
-            }else{
-                noDeviceInfo(this.video_list);
-                noDeviceInfo(this.access_list);
-            }
-            this.canvas_img=mapInfo.map_list[obj.index].img;
-          
-        }
+        
         
     },
     mounted() {
@@ -234,6 +171,55 @@ export default {
         this.canvas_info.width=$("#canvas").width();
         this.canvas_info.height=$("#canvas").height();
         
+
+        var obj = this.$route.query;
+        this.mapIndex=obj.index;
+
+        var _this=this;
+        function defaultInfo(list,i){
+            var imgUrl='';
+            switch(list[i].type){
+                case "video":
+                    imgUrl='static/zutai/images/video.png';
+                    break;
+                case "access":
+                    imgUrl='static/zutai/images/access.png';
+                    break;
+            }
+            Vue.set(list[i],'state',false);
+            Vue.set(list[i],'index',i);
+            Vue.set(list[i],'json',{
+                name:'',img:imgUrl,tipall:'',hisalarm:false,color1:'',color2:'',color3:'',color4:'',
+                pic_size:{width:60,height:60},
+                pic_offset:{offsetX:'',offsetY:''},
+                canvas_info:{width:'',height:''},
+                canvas_bg_info:{width:'',height:''}
+            });
+        }
+        function noDeviceInfo(list){
+            for(var i=0;i<list.length;i++){
+                defaultInfo(list,i);
+            }
+        }
+        //初始化侧边设备
+        if(localStorage.deviceInfo){
+            var deviceInfo=JSON.parse(localStorage.deviceInfo);
+            console.log(deviceInfo)
+            this.video_list=deviceInfo.video;
+            this.access_list=deviceInfo.access;
+            noDeviceInfo(this.video_list);
+            noDeviceInfo(this.access_list);
+        }
+        //初始化地图展示
+        if(localStorage.mapInfo){
+            var mapInfo=JSON.parse(localStorage.mapInfo);
+            this.changeWindowSize(mapInfo.map_list[obj.index].jsonArr)
+            console.log(mapInfo)
+            this.canvas_img=mapInfo.map_list[obj.index].img;
+        }
+        
+
+
         //将初始化的设备赋不同的地址
         var _arr=[];
         for(var i=0;i<this.init_device.length;i++){
@@ -257,7 +243,8 @@ export default {
            img_ev:'',
            //存储编辑的那个站点地图index   存本地库测试用到的
            mapIndex:'',
-           
+           //预览模式
+            preview:false,
            //视频侧边图片
            video_list:[
                 // {
@@ -364,6 +351,7 @@ export default {
                 "padding-top":"0",
             });
             $(this.$refs.navbtnspan).hide(500);
+            this.preview=true;
         },
         //退出全屏
         backFullScreen:function(){
@@ -379,6 +367,7 @@ export default {
                 $(this.$refs.navbtn).removeClass("fa-chevron-right");
                 this.navbtn='open';
             }
+            this.preview=false;
         },
         //返回主页面
         backPage:function(){
@@ -387,6 +376,38 @@ export default {
                 return;
             }
             this.$router.push({path:'/',query:{'index':this.mapIndex}});
+        },
+
+        changeWindowSize:function(arr){
+            let device_arrinfo=[];
+            for(var i=0;i<arr.length;i++){
+                let initjson=arr[i];
+                let result=nowLocation(initjson.json.canvas_info,initjson.json.pic_offset,initjson.json.canvas_bg_info,this.canvas_info,initjson.json.pic_size);
+                initjson.json.canvas_info=this.canvas_info;
+                initjson.json.pic_offset.offsetX=result.left;
+                initjson.json.pic_offset.offsetY=result.top;
+                initjson.json.pic_size.width=result.width;
+                initjson.json.pic_size.height=result.height;
+                this.device_arrinfo.push(initjson);
+                switch(initjson.type){
+                    case "video":
+                        this.editJudge(this.video_list,initjson);
+                        break;
+                    case "access":
+                        this.editJudge(this.access_list,initjson);
+                        break;
+                    default:  //其它
+                        break;
+                }
+            }
+        },
+        //编辑的时候判断设备是否已存在
+        editJudge:function(list,item){
+            for(var i=0;i<list.length;i++){
+                if(list[i].devid==item.devid){
+                    list.splice(i,1,item);
+                }
+            }
         },
         //拖拽
         drag:function(ev){
@@ -399,6 +420,10 @@ export default {
             ev.preventDefault();
         },
         drop:function(ev){
+            if(this.preview){
+                this.$message.warning("全屏预览模式不允许编辑!");
+                return;
+            }
             ev.preventDefault();
             var id = ev.dataTransfer.getData("id");
             var type=ev.dataTransfer.getData("type");
@@ -442,34 +467,54 @@ export default {
 
             }else{ //在地图上拖拽
                 //设备图片的偏移位置//设备图片最左边离电子地图最左边的距离，最头部的距离
-                if(ev.offsetX-this.img_ev.offsetX<0){ //左边拖出地图了，或者向左拖动了一点点
-                    if(ev.x+this.img_ev.offsetX>this.img_ev.x){ //向左移动了一点
-                        this.img_html.dialogInfo.json.pic_offset.offsetX=this.img_html.dialogInfo.json.pic_offset.offsetX-(this.img_ev.offsetX-ev.offsetX);
-                    }else{
-                        this.img_html.dialogInfo.json.pic_offset.offsetX=0;
-                    }
-                }else{ //右边拖出地图了，或者向右拖动了一点点
-                    if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetX)>$(this.$refs.canvas).width()){
-                        this.img_html.dialogInfo.json.pic_offset.offsetX=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
-                    }else if(ev.offsetX<this.img_html.dialogInfo.json.pic_size.width){
-                        this.img_html.dialogInfo.json.pic_offset.offsetX=this.img_html.dialogInfo.json.pic_offset.offsetX+(ev.offsetX-this.img_ev.offsetX);
+                if(ev.clientX<this.img_ev.clientX){ //向左拖动
+                    if(ev.offsetX-this.img_ev.offsetX<0){ //左边拖出地图了，或者向左拖动了一点点
+                        if(ev.x+this.img_ev.offsetX>this.img_ev.x){ //向左移动了一点
+                            this.img_html.dialogInfo.json.pic_offset.offsetX=this.img_html.dialogInfo.json.pic_offset.offsetX-(this.img_ev.offsetX-ev.offsetX)<0?0:this.img_html.dialogInfo.json.pic_offset.offsetX-(this.img_ev.offsetX-ev.offsetX);
+                        }else{
+                            this.img_html.dialogInfo.json.pic_offset.offsetX=0;
+                        }
                     }else{
                         this.img_html.dialogInfo.json.pic_offset.offsetX=ev.offsetX-this.img_ev.offsetX
                     }
-                }
-                if(ev.offsetY-this.img_ev.offsetY<0){ //上边拖出地图了，或者向上拖动了一点点
-                    if(ev.y+this.img_ev.offsetY>this.img_ev.y){ //向上移动了一点
-                        this.img_html.dialogInfo.json.pic_offset.offsetY=this.img_html.dialogInfo.json.pic_offset.offsetY-(this.img_ev.offsetY-ev.offsetY);
+                }else{ //向右拖动
+                    if(ev.offsetX<this.img_html.$el.offsetWidth){ //拖动了一点点
+                        if(this.img_html.$el.offsetLeft+(ev.offsetX-this.img_ev.offsetX)>$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth){
+                            this.img_html.dialogInfo.json.pic_offset.offsetX=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
+                        }else{
+                            this.img_html.dialogInfo.json.pic_offset.offsetX=this.img_html.$el.offsetLeft+(ev.offsetX-this.img_ev.offsetX);
+                        }
                     }else{
-                        this.img_html.dialogInfo.json.pic_offset.offsetY=0;
+                        if(ev.offsetX+(this.img_html.$el.offsetWidth-this.img_ev.offsetLeft)>$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth){
+                            this.img_html.dialogInfo.json.pic_offset.offsetX=$(this.$refs.canvas).width()-this.img_html.$el.offsetWidth;
+                        }else{
+                            this.img_html.dialogInfo.json.pic_offset.offsetX=ev.offsetX-this.img_ev.offsetX
+                        }
                     }
-                }else{ //下边拖出地图了，或者向下拖动了一点点
-                    if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()){
-                        this.img_html.dialogInfo.json.pic_offset.offsetY=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
-                    }else if(ev.offsetY<this.img_html.dialogInfo.json.pic_size.height){
-                        this.img_html.dialogInfo.json.pic_offset.offsetY=this.img_html.dialogInfo.json.pic_offset.offsetY+(ev.offsetY-this.img_ev.offsetY);
+                }
+                if(ev.clientY<this.img_ev.clientY){ //向上拖动
+                    if(ev.offsetY-this.img_ev.offsetY<0){ //上边拖出地图了，或者向上拖动了一点点
+                        if(ev.y+this.img_ev.offsetY>this.img_ev.y){ //向上移动了一点
+                            this.img_html.dialogInfo.json.pic_offset.offsetY=this.img_html.dialogInfo.json.pic_offset.offsetY-(this.img_ev.offsetY-ev.offsetY)<0?0:this.img_html.dialogInfo.json.pic_offset.offsetY-(this.img_ev.offsetY-ev.offsetY);
+                        }else{
+                            this.img_html.dialogInfo.json.pic_offset.offsetY=0;
+                        }
                     }else{
-                        this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY
+                        this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY;
+                    }
+                }else{ //向下拖动
+                    if(ev.offsetY<this.img_html.$el.offsetHeight){  //拖动一点点
+                        if(this.img_html.dialogInfo.json.pic_offset.offsetY+(ev.offsetY-this.img_ev.offsetY)>$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight){
+                            this.img_html.dialogInfo.json.pic_offset.offsetY=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
+                        }else{
+                            this.img_html.dialogInfo.json.pic_offset.offsetY=this.img_html.dialogInfo.json.pic_offset.offsetY+(ev.offsetY-this.img_ev.offsetY);
+                        }
+                    }else{
+                        if(ev.offsetY+(this.img_html.$el.offsetHeight-this.img_ev.offsetY)>$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight){
+                            this.img_html.dialogInfo.json.pic_offset.offsetY=$(this.$refs.canvas).height()-this.img_html.$el.offsetHeight;
+                        }else{
+                            this.img_html.dialogInfo.json.pic_offset.offsetY=ev.offsetY-this.img_ev.offsetY;
+                        }
                     }
                 }
                 var _obj=JSON.parse(JSON.stringify(this.img_html.dialogInfo));
@@ -607,6 +652,7 @@ export default {
         saveDevice:function(){
             console.log(this.device_arrinfo)
             //保存的时候再循环给json中的canvas_bg_info赋值，如果开始没有背景，编辑的时候再又就得赋值
+            this.canvas_bg_info=getBackgroundImageSize($("#canvas"));  //如果编辑的时候以前保存的没有图片的情况下
             for(let i=0;i<this.device_arrinfo.length;i++){
                 this.device_arrinfo[i].json.canvas_bg_info=this.canvas_bg_info;
             }
@@ -622,8 +668,6 @@ export default {
         },
         //撤销
         backout:function(){
-            console.log(this.backoutArr)
-            console.log(this.returnBackoutArr)
             if(this.backoutArr.length>0){
                 var lastObj=this.backoutArr[this.backoutArr.length-1];
                 var type=lastObj.type;
